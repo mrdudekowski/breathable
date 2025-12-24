@@ -70,8 +70,8 @@ export const MainMenu = ({ onSelectPractice }: MainMenuProps) => {
               <div className={styles.cardFront}>
                 <div className={styles.imageWrapper}>
                   <img 
-                    src="/assets/iceman-card/iceman.webp" 
-                    srcSet="/assets/iceman-card/iceman.webp 1x, /assets/iceman-card/iceman.webp 2x"
+                    src={`${import.meta.env.BASE_URL}assets/iceman-card/iceman.webp`}
+                    srcSet={`${import.meta.env.BASE_URL}assets/iceman-card/iceman.webp 1x, ${import.meta.env.BASE_URL}assets/iceman-card/iceman.webp 2x`}
                     sizes="(max-width: 360px) 100vw, (max-width: 600px) 90vw, 500px"
                     alt={`${practice.name} breathing practice`}
                     className={styles.practiceImage}
@@ -97,7 +97,7 @@ export const MainMenu = ({ onSelectPractice }: MainMenuProps) => {
               <div 
                 className={styles.cardBack}
                 style={{
-                  backgroundImage: "image-set(url('/assets/iceman-card/wim.webp') 1x, url('/assets/iceman-card/wim.webp') 2x)",
+                  backgroundImage: `image-set(url('${import.meta.env.BASE_URL}assets/iceman-card/wim.webp') 1x, url('${import.meta.env.BASE_URL}assets/iceman-card/wim.webp') 2x)`,
                 }}
               >
                 {/* Градиентный оверлей через ::before */}
