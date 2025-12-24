@@ -71,8 +71,8 @@ README-RULES.md
 SETUP-RULES.md
 psy/
 
-# Duplicate index.html in root (public/index.html is the source)
-index.html
+# Note: index.html in root is required for Vite build
+# public/index.html is a duplicate and can be ignored
 
 # Font files (loaded via Google Fonts, not needed locally)
 Ysabeau_SC/
