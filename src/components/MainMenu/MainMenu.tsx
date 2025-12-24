@@ -46,10 +46,10 @@ export const MainMenu = ({ onSelectPractice }: MainMenuProps) => {
       animate="visible"
     >
       <motion.h1 className={styles.title} initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-        Breathable
+        Breathable 0.1 Alpha
       </motion.h1>
       <motion.p className={styles.subtitle} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.6 }}>
-        Базовая дыхательная практика
+        Дыхательные практики
       </motion.p>
       <div className={styles.practices}>
         {practice !== null && (

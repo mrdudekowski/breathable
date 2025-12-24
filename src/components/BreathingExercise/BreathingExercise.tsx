@@ -22,7 +22,7 @@ type UIState =
   | { type: 'exercising' };
 
 export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) => {
-  const [cyclesOverride, setCyclesOverride] = useState<number>(3);
+  const [cyclesOverride, setCyclesOverride] = useState<number>(30);
   const [selectedSpeedId, setSelectedSpeedId] = useState<BreathSpeedId>(practice.defaultSpeedId || 'ice-man');
   
   // Единое состояние UI
@@ -284,6 +284,9 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
 
       <div className={styles.content}>
         <div className={styles.headerControls}>
+          <p className={styles.cyclesInfo}>
+            Ползунок - фича для разработки. Рекомендуемое количество циклов - 30.
+          </p>
           <label htmlFor="cycles-slider" className={styles.cyclesLabel}>
             Циклов: {cyclesOverride}
           </label>
