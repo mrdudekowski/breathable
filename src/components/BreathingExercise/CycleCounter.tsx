@@ -14,7 +14,7 @@ export const CycleCounter = ({
   cycle, 
   phase, 
   progress,
-  animationDuration 
+  animationDuration: _animationDuration 
 }: CycleCounterProps) => {
   // Вычисляем динамический opacity на основе прогресса фазы
   // Синхронизируется с анимацией круга дыхания (обновляется каждую секунду)

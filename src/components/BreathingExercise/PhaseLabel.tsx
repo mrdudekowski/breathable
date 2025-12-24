@@ -11,7 +11,7 @@ interface PhaseLabelProps {
 export const PhaseLabel = ({
   text,
   position,
-  phase,
+  phase: _phase,
 }: PhaseLabelProps) => {
   const positionClass = styles[position];
 

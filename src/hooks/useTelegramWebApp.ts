@@ -127,12 +127,16 @@ export const useTelegramWebApp = () => {
             if (isTelegramWebApp(sdkDefault)) {
               WebApp = sdkDefault;
             }
-            bindViewportCssVars =
-              typeof sdk.bindViewportCssVars === 'function' ? sdk.bindViewportCssVars : null;
-            requestViewportData =
-              typeof sdk.requestViewport === 'function' ? sdk.requestViewport : null;
-            getSafeAreaInsets =
-              typeof sdk.safeAreaInsets === 'function' ? sdk.safeAreaInsets : null;
+            // Проверяем наличие методов SDK (могут отсутствовать в некоторых версиях)
+            if ('bindViewportCssVars' in sdk && typeof sdk.bindViewportCssVars === 'function') {
+              bindViewportCssVars = sdk.bindViewportCssVars as (formatter?: (key: string) => string) => unknown;
+            }
+            if ('requestViewport' in sdk && typeof sdk.requestViewport === 'function') {
+              requestViewportData = sdk.requestViewport as () => Promise<unknown>;
+            }
+            if ('safeAreaInsets' in sdk && typeof sdk.safeAreaInsets === 'function') {
+              getSafeAreaInsets = sdk.safeAreaInsets as () => SafeAreaInsets | undefined;
+            }
           } catch (sdkError) {
             console.warn('Telegram WebApp SDK not available, running in standalone mode');
             applyFallbackViewport();
@@ -247,7 +251,9 @@ export const useTelegramWebApp = () => {
                   ? (payload as { is_state_stable?: boolean }).is_state_stable
                   : true;
               if (!stable) return;
-              updateViewport();
+              if (updateViewport) {
+                updateViewport();
+              }
             };
             WebApp.onEvent('viewportChanged', handler);
             removeViewportChanged = () => {
