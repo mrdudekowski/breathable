@@ -1,0 +1,233 @@
+.exercise {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-sm);
+  overflow: auto;
+  min-height: 0;
+  gap: var(--gap-sm);
+}
+
+.backButton {
+  align-self: flex-start;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-beige);
+  font-size: var(--font-size-body);
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+  margin-bottom: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.backButton:hover {
+  opacity: 1;
+}
+
+.content {
+  width: 100%;
+  max-width: min(600px, 90vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-height: 0;
+  justify-content: center;
+  gap: var(--gap-xs);
+  container-type: inline-size;
+}
+
+.headerControls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap-xs);
+  margin-bottom: var(--spacing-sm);
+  width: 100%;
+  max-width: min(400px, 80vw);
+  flex-shrink: 0;
+}
+
+.cyclesLabel {
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  color: var(--color-text-beige);
+  opacity: 0.8;
+  text-align: center;
+}
+
+.cyclesSlider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.cyclesSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-turquoise-primary);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(var(--color-turquoise-primary-rgb), 0.4);
+  transition: all 0.2s ease;
+}
+
+.cyclesSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 12px rgba(var(--color-turquoise-primary-rgb), 0.6);
+}
+
+.cyclesSlider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-turquoise-primary);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(var(--color-turquoise-primary-rgb), 0.4);
+  transition: all 0.2s ease;
+}
+
+.cyclesSlider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 12px rgba(var(--color-turquoise-primary-rgb), 0.6);
+}
+
+.cyclesSlider:disabled {
+  opacity: 0.5;
+}
+
+.cyclesSlider:disabled::-webkit-slider-thumb {
+  /* Убрано cursor: not-allowed для более плавного UX */
+}
+
+.cyclesSlider:disabled::-moz-range-thumb {
+  /* Убрано cursor: not-allowed для более плавного UX */
+}
+
+.practiceName {
+  font-size: var(--font-size-lg);
+  font-weight: 400;
+  color: var(--color-text-cream);
+  text-align: center;
+  margin-bottom: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.timersAndNotificationsContainer {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: clamp(60px, calc(12vh * var(--tg-scale-factor)), 100px);
+  margin: var(--spacing-xs) 0;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.circleWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.controls {
+  display: flex;
+  gap: var(--gap-sm);
+  margin-top: var(--spacing-sm);
+  width: 100%;
+  max-width: min(400px, 80vw);
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 1;
+  position: relative;
+}
+
+.startButton,
+.pauseButton,
+.stopButton {
+  padding: var(--button-padding-y) var(--button-padding-x);
+  border-radius: var(--radius-lg);
+  font-size: var(--button-font-size);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-width: var(--button-min-width);
+  height: var(--button-height);
+  flex: 1;
+  max-width: 200px;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+
+.startButton {
+  background: linear-gradient(135deg, var(--color-coral-primary), var(--color-coral-deep));
+  color: var(--color-text-cream);
+  box-shadow: 0 4px 20px rgba(var(--color-coral-primary-rgb), 0.3);
+}
+
+.startButton:hover {
+  box-shadow: 0 6px 30px rgba(var(--color-coral-primary-rgb), 0.4);
+}
+
+.pauseButton {
+  background: var(--color-turquoise-primary);
+  color: var(--color-text-cream);
+  box-shadow: 0 4px 20px rgba(var(--color-turquoise-primary-rgb), 0.3);
+}
+
+.pauseButton:hover {
+  box-shadow: 0 6px 30px rgba(var(--color-turquoise-primary-rgb), 0.4);
+}
+
+.stopButton {
+  background: transparent;
+  color: var(--color-text-cream);
+  border: 1px solid rgba(var(--color-text-cream-rgb), 0.3);
+}
+
+.stopButton:hover {
+  border-color: rgba(var(--color-text-cream-rgb), 0.5);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@container (max-width: 360px) {
+  .content {
+    gap: var(--gap-xs);
+    padding: 0 var(--spacing-xs);
+  }
+
+  .headerControls {
+    max-width: 100%;
+  }
+
+  .timersAndNotificationsContainer {
+    min-height: clamp(50px, calc(10vh * var(--tg-scale-factor)), 80px);
+  }
+
+  .controls {
+    gap: var(--gap-xs);
+  }
+
+  .startButton,
+  .pauseButton,
+  .stopButton {
+    max-width: 160px;
+    min-width: 140px;
+    font-size: var(--font-size-sm);
+    padding: var(--button-padding-y) var(--spacing-sm);
+  }
+}

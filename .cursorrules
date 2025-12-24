@@ -1,0 +1,909 @@
+# Правила разработки React приложения
+
+## 1. Архитектура приложения
+
+### 1.1. Файловая структура
+
+  **Feature-Sliced Design (FSD):**
+- Группируйте файлы по функциональным модулям (features), а не по типам (components, pages)
+- Структура должна отражать бизнес-логику, а не технические детали
+- Пример структуры:
+  ```
+  src/
+    features/
+      breathing-exercise/
+        ui/
+          BreathingCircle.tsx
+          BreathingTimer.tsx
+        model/
+          useBreathingExercise.ts
+        api/
+          breathingApi.ts
+  ```
+
+**React: Atomic Design + Контекст домена:**
+- Используйте компоненты (atoms, molecules, organisms) только внутри доменных фичей
+- Избегайте глобальных атомов без привязки к домену
+- Каждый атом должен иметь контекст использования
+
+### 1.2. Разделение ответственности (Separation of Concerns)
+
+**Принцип разделения между компонентами и хуками:**
+
+**Компоненты отвечают за:**
+- UI state (что показывать: notification, countdown, модальные окна)
+- UI transitions (переходы между визуальными состояниями)
+- Пользовательские взаимодействия (клики, ввод)
+- Рендеринг на основе данных из хуков
+
+**Хуки отвечают за:**
+- Бизнес-логику (расчёты, валидация, алгоритмы)
+- Data state (упражнение, прогресс, таймеры)
+- Асинхронные операции (API запросы, сложные вычисления)
+- Чистые функции для трансформации данных
+
+**Пример разделения (BreathingExercise):**
+```typescript
+// ❌ ПЛОХО: хук управляет UI
+const useBreathingExercise = () => {
+  const [showNotification, setShowNotification] = useState(false);
+  const [countdownValue, setCountdownValue] = useState(3);
+  // ...
+};
+
+// ✅ ХОРОШО: хук управляет бизнес-логикой
+const useBreathingExercise = () => {
+  const [state, setState] = useState<ExerciseState>({
+    currentPhase: 'inhale',
+    phaseTimeRemaining: 5,
+    // ...
+  });
+  // Возвращает только данные + функции управления
+  return { state, startExercise, pauseExercise, resumeExercise };
+};
+
+// Компонент управляет UI на основе данных хука
+const BreathingExercise = () => {
+  const [uiState, setUIState] = useState<UIState>({ type: 'idle' });
+  const { state, startExercise } = useBreathingExercise();
+  
+  // Компонент решает, когда показывать notification/countdown
+  useEffect(() => {
+    if (state.currentPhase === 'pause') {
+      setUIState({ type: 'showing-notification' });
+      pauseExercise(); // управляет таймером хука
+    }
+  }, [state.currentPhase]);
+};
+```
+
+**Сигналы о нарушении принципа:**
+- Хук импортирует UI компоненты или управляет DOM
+- Компонент дублирует бизнес-логику из хука
+- Одно и то же значение (например, `pauseDuration`) определено и в хуке, и в компоненте
+- Невозможно использовать хук без конкретного компонента
+
+**Callbacks как мост между слоями:**
+- Используйте callbacks в хуках для уведомления компонента о событиях:
+  ```typescript
+  interface Callbacks {
+    onRoundTransition?: (roundIndex: number) => void;
+    onComplete?: () => void;
+  }
+  
+  const useBreathingExercise = ({ callbacks }: { callbacks?: Callbacks }) => {
+    // Хук вызывает callback, компонент реагирует
+    if (roundCompleted) {
+      callbacks?.onRoundTransition?.(nextRoundIndex);
+    }
+  };
+  ```
+
+### 1.3. Управление состоянием
+
+**Redux Toolkit (RTK) для глобального состояния:**
+- Используйте RTK для сложного глобального состояния
+- Структура store должна следовать FSD принципам
+- Пример:
+  ```typescript
+  import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+  
+  interface State {
+    // типизированное состояние
+  }
+  
+  const slice = createSlice({
+    name: 'featureName',
+    initialState,
+    reducers: {
+      // редьюсеры
+    }
+  });
+  ```
+
+**React Context API:**
+- Используйте только для low-frequency данных (темы, аутентификация)
+- Для high-frequency данных используйте Zustand или Jotai
+- Избегайте создания множественных контекстов для одного домена
+
+**Серверное состояние:**
+- Используйте React Query (@tanstack/react-query) вместо ручного управления кэшированием
+- Не дублируйте серверное состояние в Redux
+- Используйте React Query для всех API запросов
+
+### 1.4. Асинхронные операции
+
+**RTK Query для API-интеграций:**
+- Используйте RTK Query для интеграции с API
+- Определяйте endpoints в отдельных файлах по доменам
+- Пример:
+  ```typescript
+  import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+  
+  export const api = createApi({
+    baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+    endpoints: (builder) => ({
+      // endpoints
+    }),
+  });
+  ```
+
+**Отмена запросов:**
+- Всегда используйте AbortController в useEffect
+- Или используйте queryClient.cancelQueries() для React Query
+- Очищайте запросы при размонтировании компонента
+
+### 1.5. Чистые функции и изоляция логики
+
+**Выносите чистые функции за пределы компонентов:**
+- Если функция не использует state, props, или хуки - вынесите её
+- Это улучшает тестируемость, читаемость и производительность
+- Группируйте связанные функции в отдельные файлы (utils/)
+
+**Пример:**
+```typescript
+// ❌ ПЛОХО: функция внутри компонента
+export const BreathingCircle = ({ phase, progress }: Props) => {
+  const getGradientAngle = (phase: BreathingPhase, progress: number) => {
+    if (phase === 'inhale') return 135 + (progress * 90);
+    return 225 + (progress * 90);
+  };
+  const angle = getGradientAngle(phase, progress);
+};
+
+// ✅ ХОРОШО: чистая функция вынесена
+const getGradientAngle = (phase: BreathingPhase, progress: number): number => {
+  if (phase === 'inhale') return 135 + (progress * 90);
+  if (phase === 'exhale') return 225 + (progress * 90);
+  return 180;
+};
+
+export const BreathingCircle = ({ phase, progress }: Props) => {
+  const angle = getGradientAngle(phase, progress);
+  // ...
+};
+```
+
+**Требования к чистым функциям:**
+- Детерминированность: одинаковый вход → одинаковый выход
+- Отсутствие side effects (не меняют внешнее состояние)
+- Не зависят от времени или внешних переменных
+- Легко тестируются изолированно
+
+**Группировка утилит:**
+```typescript
+// src/utils/breathingCalculations.ts
+export const getPhaseDurationWithSpeed = (...) => { ... };
+export const getSpecialPhaseDuration = (...) => { ... };
+export const isFinalHold = (...) => { ... };
+
+// src/utils/colorHelpers.ts
+export const getRgbaFromVariable = (...) => { ... };
+
+// src/utils/gradientHelpers.ts
+export const getGradientAngle = (...) => { ... };
+```
+
+## 2. UI/UX Дизайн
+
+### 2.1. Доступность (a11y)
+
+**Семантический HTML:**
+- Используйте правильные HTML теги (button, nav, main, article, section)
+- Избегайте div-ов там, где есть семантические альтернативы
+- Пример:
+  ```html
+  <button type="button" aria-label="Начать упражнение">
+    Начать
+  </button>
+  ```
+
+**ARIA атрибуты:**
+- Используйте `aria-live="polite"` для динамических обновлений (например, для BreathingCircle с меняющимися фазами)
+- Используйте `role="alert"` для ошибок
+- Всегда добавляйте `aria-label` для иконок без текста и кнопок
+- Для слайдеров используйте `aria-valuetext` для описания текущего значения
+- Следуйте WAI-ARIA 1.2 спецификации
+- Пример:
+  ```typescript
+  <div aria-live="polite" aria-label="Фаза дыхания">
+    {phase === 'inhale' ? 'Вдох' : 'Выдох'}
+  </div>
+  
+  <input
+    type="range"
+    aria-label="Количество циклов"
+    aria-valuetext={`${value} циклов`}
+    aria-valuemin={1}
+    aria-valuemax={30}
+    aria-valuenow={value}
+  />
+  ```
+
+**Проверка контрастности (WCAG AA):**
+- Все цветовые комбинации должны соответствовать WCAG AA (минимум 4.5:1 для текста)
+- Белый текст на синем фоне: проверено
+- Коралловый текст на синем фоне: проверено
+- Используйте инструменты: WebAIM Contrast Checker, Chrome DevTools Accessibility panel
+- После изменения цветов всегда проверяйте контрастность
+
+### 2.2. Респонсивность
+
+**Mobile-First подход:**
+- Начинайте стилизацию с мобильных устройств
+- Используйте min-width в media queries
+- Пример:
+  ```css
+  .container {
+    padding: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .container {
+      padding: 2rem;
+    }
+  }
+  ```
+
+**CSS Container Queries:**
+- Используйте Container Queries для компонентов вместо media queries где возможно
+- Это позволяет компонентам адаптироваться к своему контейнеру, а не экрану
+- Пример:
+  ```css
+  .card {
+    container-type: inline-size;
+  }
+  
+  @container (min-width: 400px) {
+    .card-content {
+      display: flex;
+    }
+  }
+  ```
+
+### 2.3. Дизайн-система
+
+**Цветовая схема: Аналоговая палитра (Single Source of Truth)**
+
+Все цвета определены в `src/index.css` и должны использоваться только через CSS переменные. Никаких захардкоженных hex/rgb значений в компонентах.
+
+**Распределение цветов:**
+- **Синий (70%)** - доминирующий: фон, карточки, основной контент, структура
+- **Лаванда (20%)** - вторичный: мягкие элементы, подсказки, медитативные состояния, hover-эффекты
+- **Бирюза (10%)** - акцентный: динамика, активные фазы дыхания, интерактивные элементы
+- **Коралловый (мягкий акцент)** - тёплый контраст: CTA кнопки, важные действия, hover-акценты (10-15% opacity везде)
+- **Мятный** - для задержек дыхания (замена зелёного)
+
+**Использование цветов:**
+```css
+/* В CSS модулях - используйте RGB переменные для rgba() */
+.button {
+  background: var(--color-coral-primary);
+  box-shadow: 0 4px 20px rgba(var(--color-coral-primary-rgb), 0.3);
+}
+
+/* В TypeScript - используйте утилиту colorHelpers.ts */
+import { getRgbaFromVariable } from '../../utils/colorHelpers';
+
+const glowColor = getRgbaFromVariable('--color-blue-primary-rgb', 0.4);
+```
+
+**Вращающийся градиент круга дыхания:**
+- Вдох: градиент вращается от синего к бирюзе (135deg → 225deg)
+- Выдох: градиент вращается от бирюзы к лаванде (225deg → 315deg)
+- Угол градиента вычисляется динамически на основе прогресса фазы
+- Реализация: функция `getGradientAngle()` вынесена за пределы компонента для оптимизации
+
+**Контекстное свечение:**
+- Круг дыхания: синее свечение для обычных фаз, мятное для round-exhale, синее для global-inhale
+- Кнопки: коралловое для "Начать", бирюзовое для "Пауза", без свечения для "Стоп"
+- Успешные состояния: лавандовое свечение
+- Интенсивность свечения меняется динамически для создания эффекта пульсации
+
+**CSS Variables для темизации:**
+- Используйте CSS переменные для всех цветов, размеров, отступов
+- Определяйте переменные в `:root` в `src/index.css` (Single Source of Truth)
+- Для rgba() используйте RGB переменные: `rgba(var(--color-blue-primary-rgb), 0.6)`
+- В TypeScript используйте утилиту `src/utils/colorHelpers.ts` для работы с цветами
+- Пример:
+  ```css
+  :root {
+    /* Основная палитра */
+    --color-blue-primary: #2196F3;
+    --color-lavender-primary: #9575CD;
+    --color-turquoise-primary: #26A69A;
+    --color-coral-primary: #FF8A65;
+    --color-mint-primary: #4DB6AC;
+    
+    /* RGB переменные для rgba() */
+    --color-blue-primary-rgb: 33, 150, 243;
+    --color-lavender-primary-rgb: 149, 117, 205;
+    --color-turquoise-primary-rgb: 38, 166, 154;
+    --color-coral-primary-rgb: 255, 138, 101;
+    --color-mint-primary-rgb: 77, 182, 172;
+    
+    /* Fallback для SSR/ошибок */
+    --color-fallback-rgb: 33, 150, 243;
+  }
+  ```
+
+**Работа с цветами в TypeScript:**
+```typescript
+// Используйте утилиту colorHelpers.ts
+import { getRgbaFromVariable } from '../../utils/colorHelpers';
+
+// Мемоизируйте повторяющиеся вызовы для оптимизации
+const colors = useMemo(() => ({
+  high: getRgbaFromVariable('--color-blue-primary-rgb', 0.9),
+  medium: getRgbaFromVariable('--color-blue-primary-rgb', 0.5),
+  low: getRgbaFromVariable('--color-blue-primary-rgb', 0.3),
+}), []);
+```
+
+**Запрещено:**
+- ❌ Захардкоженные hex/rgb значения в компонентах
+- ❌ Прямое использование `rgba(33, 150, 243, 0.6)` без CSS переменных
+- ❌ Дублирование цветов в нескольких местах
+- ✅ Всегда используйте CSS переменные из `src/index.css`
+
+**Распределение цветов по элементам:**
+
+**Кнопки:**
+- "Начать": коралловый градиент `linear-gradient(135deg, var(--color-coral-primary), var(--color-coral-deep))` с коралловым свечением
+- "Пауза": бирюзовый фон `var(--color-turquoise-primary)` с бирюзовым свечением
+- "Стоп": прозрачная с кремовой обводкой `rgba(var(--color-text-cream-rgb), 0.3)`
+
+**Круг дыхания:**
+- Вдох: вращающийся градиент синий → бирюза (угол 135deg → 225deg)
+- Выдох: вращающийся градиент бирюза → лаванда (угол 225deg → 315deg)
+- Задержка round-exhale: мятный цвет `var(--color-mint-primary)` с пульсирующим свечением
+- Задержка global-inhale: глубокий синий `var(--color-blue-deep)` со статичным свечением
+- Кольцо: белое `rgba(255, 255, 255, 0.3)` для чистой границы
+
+**Текст:**
+- Заголовки: белый `var(--color-text-white)` для максимальной читаемости
+- Основной текст: кремовый `var(--color-text-cream)`
+- Подзаголовки: белый `var(--color-text-white)` с opacity 0.8
+- Мета-информация: янтарный `var(--color-accent-amber)` для контраста
+
+**Интерактивные элементы:**
+- Таймер паузы: лавандовый `rgba(var(--color-lavender-primary-rgb), 0.9)`
+- Слайдер циклов: бирюзовый трек и thumb `var(--color-turquoise-primary)`
+- Переключатели скорости: бирюза (Ice Man) / лаванда (Space Man)
+- Уведомления: лавандовый фон с градиентом
+
+**Карточки:**
+- Фон: `var(--color-bg-secondary)`
+- Hover: коралловая обводка `rgba(var(--color-coral-primary-rgb), 0.6)` и свечение
+- Оверлей изображения: градиентный `linear-gradient(180deg, rgba(var(--color-blue-primary-rgb), 0.3), rgba(var(--color-turquoise-primary-rgb), 0.2))`
+
+**Фон приложения:**
+- Тонкий градиент `var(--bg-gradient-subtle)` от тёмно-синего к тёмно-лавандовому
+
+**Библиотека компонентов:**
+- Используйте Storybook + Chromatic для версионирования и тестирования UI
+- Каждый компонент должен иметь Storybook историю
+- Используйте Chromatic для визуального регрессионного тестирования
+
+## 3. Продвинутая разработка
+
+### 3.1. TypeScript
+
+**Strict Mode:**
+- Всегда используйте strict mode в tsconfig.json
+- Настройки:
+  ```json
+  {
+    "compilerOptions": {
+      "strict": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "strictFunctionTypes": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true
+    }
+  }
+  ```
+
+**Утилитарные типы:**
+- Используйте встроенные утилитарные типы TypeScript
+- Примеры:
+  ```typescript
+  type UserUpdate = Partial<User>;
+  type UserKeys = keyof User;
+  type ReadonlyUser = Readonly<User>;
+  ```
+
+### 3.2. Работа с таймерами и асинхронностью
+
+**Управление setTimeout/setInterval в React:**
+
+**Всегда используйте refs для хранения timer IDs:**
+```typescript
+const timerRef = useRef<number | null>(null);
+
+useEffect(() => {
+  timerRef.current = window.setTimeout(() => {
+    // logic
+  }, 1000);
+  
+  return () => {
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+}, [deps]);
+```
+
+**Один таймер для одной цели:**
+- Не создавайте несколько таймеров для одной и той же задачи
+- Используйте один ref для управления UI transitions
+- Если нужно несколько таймеров, называйте их явно: `notificationTimerRef`, `countdownTimerRef`
+
+**State Machine для управления async transitions:**
+```typescript
+// ✅ ХОРОШО: одно состояние, один таймер
+type UIState = 
+  | { type: 'idle' }
+  | { type: 'showing-notification'; duration: number }
+  | { type: 'counting-down'; secondsRemaining: number }
+  | { type: 'active' };
+
+const [uiState, setUIState] = useState<UIState>({ type: 'idle' });
+const transitionTimerRef = useRef<number | null>(null);
+
+useEffect(() => {
+  if (transitionTimerRef.current) {
+    clearTimeout(transitionTimerRef.current);
+  }
+  
+  switch (uiState.type) {
+    case 'showing-notification':
+      transitionTimerRef.current = window.setTimeout(() => {
+        setUIState({ type: 'counting-down', secondsRemaining: 3 });
+      }, uiState.duration);
+      break;
+    case 'counting-down':
+      if (uiState.secondsRemaining > 0) {
+        transitionTimerRef.current = window.setTimeout(() => {
+          setUIState({ 
+            type: 'counting-down', 
+            secondsRemaining: uiState.secondsRemaining - 1 
+          });
+        }, 1000);
+      } else {
+        setUIState({ type: 'active' });
+      }
+      break;
+  }
+  
+  return () => {
+    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+  };
+}, [uiState]);
+```
+
+**Избегайте race conditions:**
+- Всегда очищайте предыдущий таймер перед созданием нового
+- Используйте cleanup функции в useEffect
+- Не полагайтесь на порядок выполнения нескольких эффектов
+
+**Паузы и возобновления:**
+- Если нужно приостановить таймер, используйте флаг `isPaused` в состоянии
+- Не создавайте новый таймер при возобновлении, если он уже существует
+- Сохраняйте оставшееся время при паузе
+
+### 3.3. Оптимизация React
+
+**Мемоизация:**
+- Используйте React.memo для компонентов, которые часто ререндерятся
+- Используйте useMemo для дорогих вычислений (например, вычисление цветов из CSS переменных)
+- Используйте useCallback для функций, передаваемых в дочерние компоненты
+- Выносите чистые функции за пределы компонента для оптимизации
+- Пример:
+  ```typescript
+  // Выносим функцию за пределы компонента
+  const getGradientAngle = (phase: BreathingPhase, progress: number): number => {
+    if (phase === 'inhale') return 135 + (progress * 90);
+    if (phase === 'exhale') return 225 + (progress * 90);
+    return 180;
+  };
+
+  const ExpensiveComponent = React.memo(({ data }: Props) => {
+    // Мемоизируем повторяющиеся вызовы getRgbaFromVariable
+    const colors = useMemo(() => ({
+      high: getRgbaFromVariable('--color-blue-primary-rgb', 0.9),
+      low: getRgbaFromVariable('--color-blue-primary-rgb', 0.3),
+    }), []);
+    
+    const computed = useMemo(() => expensiveCalculation(data), [data]);
+    const handler = useCallback(() => {
+      // обработчик
+    }, []);
+    
+    return <div>{computed}</div>;
+  });
+  ```
+
+**Code Splitting:**
+- Используйте React.lazy для ленивой загрузки компонентов
+- Всегда оборачивайте lazy компоненты в Suspense
+- Пример:
+  ```typescript
+  const LazyComponent = React.lazy(() => import('./LazyComponent'));
+  
+  function App() {
+    return (
+      <Suspense fallback={<Loading />}>
+        <LazyComponent />
+      </Suspense>
+    );
+  }
+  ```
+
+### 3.4. Тестирование
+
+**Unit-тесты:**
+- Используйте Jest + React Testing Library
+- Тестируйте поведение, а не реализацию
+- Пример:
+  ```typescript
+  import { render, screen } from '@testing-library/react';
+  import userEvent from '@testing-library/user-event';
+  
+  test('отображает кнопку и реагирует на клик', async () => {
+    const handleClick = jest.fn();
+    render(<Button onClick={handleClick}>Click me</Button>);
+    
+    const button = screen.getByRole('button', { name: /click me/i });
+    await userEvent.click(button);
+    
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+  ```
+
+**E2E тестирование:**
+- Используйте Cypress с компонентными тестами
+- Покрывайте критичные пользовательские сценарии
+- Тесты должны быть изолированными и воспроизводимыми
+
+Дава## 4. Дебаггинг и Анализ
+
+### 4.1. Стратегии систематической отладки сложных багов
+
+**Когда LLM ходит по кругу и не может найти первопричину:**
+
+**СТРАТЕГИЯ 1: Систематическое логирование (Logging-First Approach)**
+- **Добавьте `console.log` на КАЖДОМ этапе** подозрительного flow
+- Логируйте ВСЕ изменения состояния, все вызовы useEffect, все триггеры
+- Используйте префиксы для группировки: `[ComponentName Effect]`, `[HookName]`, `[Function]`
+- Логируйте не только значения, но и **условия** (`condition met`, `skipped because...`)
+- Пример:
+  ```typescript
+  useEffect(() => {
+    console.log('[Transitions] Triggered with:', { uiState, isRunning });
+    
+    if (condition) {
+      console.log('[Transitions] Condition met, executing...');
+      // logic
+    } else {
+      console.log('[Transitions] Condition not met, skipping');
+    }
+  }, [deps]);
+  ```
+- **Запросите у пользователя полные логи из консоли браузера**
+- Анализируйте логи на предмет дублирований, пропущенных шагов, неожиданного порядка
+
+**СТРАТЕГИЯ 2: Поиск по числовым константам (Magic Numbers Hunt)**
+- Если проблема связана с таймингом, задержками, или дублированием счётчиков
+- Используйте `grep` для поиска ВСЕХ вхождений конкретного числа
+- Пример: если countdown длится 7 секунд вместо 3, ищите числа `7`, `5`, `3`, `2`
+- Часто проблема в **нескольких местах одновременно** (UI + логика)
+- Пример:
+  ```bash
+  grep -r "\\b5\\b" src/hooks/
+  grep -r "phaseTimeRemaining" src/
+  ```
+
+**СТРАТЕГИЯ 3: Архитектурная карта (Mental Model)**
+- Если код сложный, создайте **текстовую карту** всех взаимодействий:
+  ```
+  Component BreathingExercise:
+    - State: uiState (idle/notification/countdown/exercising)
+    - Refs: transitionTimerRef, previousPhaseRef
+    - Effects:
+      1. UI transitions (зависимости: uiState, state.isRunning)
+      2. Round transitions (зависимости: state.currentPhase, ...)
+    - Callbacks: startExercise, pauseExercise, resumeExercise
+  
+  Hook useBreathingExercise:
+    - State: ExerciseState (phase, timeRemaining, ...)
+    - Timer: intervalRef (tick every 1 sec)
+    - Logic: getNextStateOnTick -> handlePauseCompletion
+  ```
+- Это помогает увидеть **границы ответственности** и найти дублирование логики
+
+**СТРАТЕГИЯ 4: Изоляция проблемы (Divide & Conquer)**
+- Разделите проблему на **визуальную** и **логическую** части
+- Визуальная: что отображается неправильно? (дублирование UI, неправильные компоненты)
+- Логическая: что происходит в состоянии? (неправильные таймеры, задержки)
+- Исправляйте **по очереди**, начиная с визуальной части
+- После каждого исправления просите пользователя протестировать
+
+**СТРАТЕГИЯ 5: Проверка зависимостей useEffect (Dependency Audit)**
+- Если эффект срабатывает слишком часто, проблема в зависимостях
+- Добавьте логирование **старых и новых значений** всех зависимостей:
+  ```typescript
+  useEffect(() => {
+    console.log('[Effect] Deps changed:', {
+      uiState: { prev: prevUiState, current: uiState },
+      isRunning: { prev: prevIsRunning, current: state.isRunning }
+    });
+  }, [uiState, state.isRunning]);
+  ```
+- Используйте **useRef** для хранения функций, если они не должны быть в зависимостях:
+  ```typescript
+  const funcRef = useRef(func);
+  useEffect(() => { funcRef.current = func; }, [func]);
+  
+  useEffect(() => {
+    funcRef.current(); // используем ref вместо прямого вызова
+  }, []); // func больше не в зависимостях
+  ```
+
+**СТРАТЕГИЯ 6: State Machine для сложных UI transitions**
+- Если компонент управляет несколькими boolean флагами (`isShowing`, `isCounting`, `isPreparing`)
+- Замените на **один state с дискретными состояниями**:
+  ```typescript
+  type UIState = 
+    | { type: 'idle' }
+    | { type: 'showing-notification'; data: NotificationData }
+    | { type: 'counting-down'; secondsRemaining: number }
+    | { type: 'exercising' };
+  ```
+- Это **устраняет race conditions** и делает переходы явными
+- Один эффект управляет всеми transitions на основе `uiState.type`
+
+**СТРАТЕГИЯ 7: Временное упрощение (Simplify & Test)**
+- Если не можете найти баг, **временно упростите код**:
+  - Закомментируйте подозрительные эффекты
+  - Замените сложную логику на заглушку
+  - Удалите оптимизации (memo, callback)
+- Проверьте, исчезла ли проблема
+- Возвращайте код **постепенно**, тестируя на каждом шаге
+
+**СТРАТЕГИЯ 8: Diff Analysis (Поиск несоответствий)**
+- Если есть **два источника правды** для одного и того же (например, UI countdown и логический timer)
+- Найдите все места, где используется похожая логика
+- Проверьте, синхронизированы ли они
+- Часто проблема в том, что **старый код не удалён** после рефакторинга
+
+**КРИТИЧЕСКИЕ ВОПРОСЫ при застревании:**
+1. Где ALL источники этого значения/поведения в кодовой базе?
+2. Есть ли дублирование логики между компонентом и хуком?
+3. Какие эффекты срабатывают при этой проблеме? (логирование!)
+4. Какие числовые константы связаны с проблемой? (grep!)
+5. Может ли проблема быть в ДВУХ местах одновременно?
+
+**React DevTools:**
+- Регулярно проверяйте пропсы, хуки и производительность через React DevTools
+- Используйте Profiler для выявления узких мест
+- В React DevTools Components tab смотрите **hooks** и их значения в реальном времени
+
+**Why Did You Render:**
+- Используйте для отслеживания лишних ререндеров в разработке
+- Пример:
+  ```typescript
+  import whyDidYouRender from '@welldone-software/why-did-you-render';
+  
+  if (process.env.NODE_ENV === 'development') {
+    whyDidYouRender(React, {
+      trackAllPureComponents: true,
+    });
+  }
+  ```
+
+### 4.2. Мониторинг
+
+**Sentry:**
+- Настройте Sentry для отлавливания ошибок в продакшене
+- Передавайте контекст (Redux state, пользователь) в ошибки
+- Группируйте похожие ошибки
+
+**Web Vitals:**
+- Отслеживайте FCP, LCP, CLS через web-vitals npm-пакет
+- Настройте алерты для деградации метрик
+- Пример:
+  ```typescript
+  import { onCLS, onFCP, onLCP } from 'web-vitals';
+  
+  onCLS(console.log);
+  onFCP(console.log);
+  onLCP(console.log);
+  ```
+
+**Производительность анимаций:**
+- Используйте `will-change` для элементов с постоянными анимациями (например, BreathingCircle)
+- Используйте `transform` и `opacity` для анимаций (GPU-ускорение)
+- Избегайте анимации `width`, `height`, `top`, `left` (вызывают рефлоу)
+- Мемоизируйте вычисления для анимаций (например, углы градиентов)
+- Пример:
+  ```css
+  .breathingCircle {
+    will-change: transform, filter;
+    transform: translateZ(0); /* GPU ускорение */
+  }
+  ```
+
+### 4.3. Анализ бандла
+
+**Webpack Bundle Analyzer:**
+- Регулярно анализируйте размер бандла
+- Команда: `npm run build -- --analyze`
+- Оптимизируйте: заменяйте lodash на lodash-es, используйте dynamic imports
+- Удаляйте неиспользуемые зависимости
+
+## 5. Дополнительные аспекты
+
+### 5.1. Безопасность
+
+**XSS-защита:**
+- Никогда не используйте dangerouslySetInnerHTML без санитизации
+- Используйте библиотеки типа DOMPurify для очистки HTML
+- Пример:
+  ```typescript
+  import DOMPurify from 'dompurify';
+  
+  const cleanHTML = DOMPurify.sanitize(userInput);
+  <div dangerouslySetInnerHTML={{ __html: cleanHTML }} />
+  ```
+
+**CSP (Content Security Policy):**
+- Настройте CSP заголовки через helmet (Express) или meta-теги
+- Ограничьте источники скриптов и стилей
+- Используйте nonce для inline скриптов
+
+### 5.2. CI/CD
+
+**GitHub Actions:**
+- Запускайте тесты при пуше в main
+- Настройте автоматический деплой на Vercel/Netlify при успешном PR
+- Используйте matrix strategy для тестирования на разных версиях Node
+
+**Линтинг:**
+- Используйте ESLint + Prettier для форматирования кода
+- Настройте Husky для pre-commit хуков
+- Запретите коммиты с ошибками линтера
+
+### 5.3. Документация
+
+**TypeDoc:**
+- Генерируйте документацию из TypeScript-комментариев
+- Документируйте публичные API
+- Используйте JSDoc комментарии для сложных функций
+
+**README.md:**
+- Обязательно опишите архитектуру проекта
+- Укажите все переменные окружения
+- Добавьте команды запуска и сборки
+- Включите примеры использования
+
+## 6. Запрещенные практики
+
+❌ **Использование `any` в TypeScript**
+- Замена: используйте `unknown` + type guard
+- Пример:
+  ```typescript
+  function isString(value: unknown): value is string {
+    return typeof value === 'string';
+  }
+  
+  if (isString(value)) {
+    // value теперь string
+  }
+  ```
+
+❌ **Внедрение стилей через `!important` в CSS**
+- Используйте специфичность селекторов
+- Реорганизуйте структуру CSS если нужно
+- Исключение: только для переопределения сторонних библиотек
+
+❌ **Хранение состояния в localStorage без шифрования**
+- Шифруйте чувствительные данные перед сохранением
+- Используйте библиотеки типа crypto-js
+- Никогда не храните токены или пароли в открытом виде
+
+❌ **Прямые мутации состояния**
+- В Redux используйте immer (встроен в RTK)
+- В React используйте setState с функцией обновления
+- Избегайте мутаций массивов и объектов напрямую
+
+❌ **Игнорирование ошибок**
+- Всегда обрабатывайте ошибки в async функциях
+- Используйте Error Boundaries для React компонентов
+- Логируйте ошибки для отладки
+- В development режиме логируйте предупреждения (например, отсутствие CSS переменных)
+- Пример:
+  ```typescript
+  // В colorHelpers.ts
+  if (process.env.NODE_ENV === 'development') {
+    console.warn(
+      `[colorHelpers] CSS переменная "${cssVariable}" не найдена. Используется fallback.`
+    );
+  }
+  ```
+
+❌ **Захардкоженные цвета в коде**
+- Замена: используйте CSS переменные из `src/index.css`
+- В TypeScript используйте `getRgbaFromVariable()` из `src/utils/colorHelpers.ts`
+- Пример:
+  ```typescript
+  // ❌ Плохо
+  const color = 'rgba(33, 150, 243, 0.6)';
+  
+  // ✅ Хорошо
+  const color = getRgbaFromVariable('--color-blue-primary-rgb', 0.6);
+  ```
+
+## 7. Принципы кода (из существующих правил)
+
+**Self-Documenting Code:**
+- Код должен быть настолько понятным, что комментарии нужны только для объяснения "почему", а не "что"
+- Имена переменных, функций и классов должны явно отражать их назначение
+- Сложная логика требует дополнительной документации
+- Комментарии должны объяснять намерение и причину, а не описывать очевидное
+- Примеры:
+  - ✅ Хорошо: `calculate_price_with_discount(item, discount_rate)`
+  - ❌ Плохо: `calc(x, d)`
+  - ✅ Хорошо (комментарий): "Вращающийся градиент создает ощущение расширения и движения"
+  - ❌ Плохо (комментарий): "Мятная задержка (замена зелёной)" - объясняет "что", а не "почему"
+  - ✅ Хорошо (комментарий): "Используем мятный цвет для round-exhale, чтобы визуально отличать от обычных фаз и создать ассоциацию с холодным, спокойным состоянием задержки"
+
+**Explicit Dependencies:**
+- ВСЕ зависимости проекта должны быть явно объявлены и задокументированы
+- Никакие скрытые зависимости не допустимы
+- Каждый импорт, библиотека и внешний сервис должен быть понятен из кода или документации
+- Примеры:
+  - ✅ Хорошо: `package.json` с точными версиями
+  - ❌ Плохо: Использование библиотеки без указания в dependencies
+
+**Single Source of Truth:**
+- ВСЕГДА должна существовать одна каноническая версия любого знания, конфигурации или данных
+- Никакая информация не должна дублироваться в нескольких местах без четкой ссылки на источник
+- Если информация находится в нескольких местах, это ПРАВИЛО нарушено
+- Примеры:
+  - ✅ Хорошо: Один config файл для всех настроек
+  - ❌ Плохо: Настройки разбросаны по разным файлам без синхронизации
+
+**Single Source of Truth для цветов:**
+- Все цвета определены ТОЛЬКО в `src/index.css` в `:root`
+- RGB переменные для rgba() также в `src/index.css`
+- Fallback значения используют CSS переменную `--color-fallback-rgb`
+- В TypeScript используйте `src/utils/colorHelpers.ts` для работы с цветами
+- Запрещено: захардкоженные hex/rgb значения в компонентах или CSS модулях
+- Примеры:
+  - ✅ Хорошо: `rgba(var(--color-blue-primary-rgb), 0.6)` в CSS
+  - ✅ Хорошо: `getRgbaFromVariable('--color-blue-primary-rgb', 0.6)` в TypeScript
+  - ❌ Плохо: `rgba(33, 150, 243, 0.6)` напрямую в коде
+  - ❌ Плохо: `#2196F3` в CSS модулях вместо `var(--color-blue-primary)`

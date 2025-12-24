@@ -1,0 +1,16 @@
+.counter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.1);
+  transform-origin: center center;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 300;
+  color: var(--color-text-cream);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 11; /* Счетчик цикла над текстовыми подсказками, но под таймером */
+  text-align: center;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  line-height: 1;
+}

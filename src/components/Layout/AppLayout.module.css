@@ -1,0 +1,20 @@
+.layout {
+  width: 100%;
+  /* Используем Telegram viewportStableHeight вместо 100vh для корректного масштабирования */
+  height: var(--tg-viewport-stable-height, 100vh);
+  /* Fallback для браузеров без Telegram / CSS vars */
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: var(--color-bg-primary);
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+  /* Учитываем safe areas для устройств с вырезами */
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+}

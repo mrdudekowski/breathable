@@ -1,0 +1,118 @@
+.toggleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  width: 100%;
+  max-width: min(400px, 80vw);
+  flex-shrink: 0;
+}
+
+.toggleWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xs);
+  position: relative;
+}
+
+.option {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--color-text-beige);
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  border-radius: var(--radius-md);
+  position: relative;
+  z-index: 1;
+  outline: none;
+}
+
+.option:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.3);
+  outline-offset: 2px;
+}
+
+.option:not(:disabled):hover {
+  opacity: 0.8;
+}
+
+.option:disabled {
+  opacity: 0.3;
+}
+
+.iceMan {
+  /* Стили для Ice Man опции */
+}
+
+.iceManActive {
+  color: var(--color-turquoise-primary);
+  opacity: 1;
+  text-shadow: 
+    0 0 10px rgba(var(--color-turquoise-primary-rgb), 0.8),
+    0 0 20px rgba(var(--color-turquoise-primary-rgb), 0.6),
+    0 0 30px rgba(var(--color-turquoise-primary-rgb), 0.4);
+  transition: all 0.3s ease;
+}
+
+.spaceMan {
+  /* Стили для Space Man опции */
+}
+
+.spaceManActive {
+  color: var(--color-lavender-primary);
+  opacity: 1;
+  text-shadow: 
+    0 0 10px rgba(var(--color-lavender-primary-rgb), 0.8),
+    0 0 20px rgba(var(--color-lavender-primary-rgb), 0.6),
+    0 0 30px rgba(var(--color-lavender-primary-rgb), 0.4);
+  transition: all 0.3s ease;
+}
+
+/* Анимация для плавного переключения */
+@keyframes glowPulse {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px rgba(var(--color-turquoise-primary-rgb), 0.8),
+      0 0 20px rgba(var(--color-turquoise-primary-rgb), 0.6),
+      0 0 30px rgba(var(--color-turquoise-primary-rgb), 0.4);
+  }
+  50% {
+    text-shadow: 
+      0 0 15px rgba(var(--color-turquoise-primary-rgb), 1),
+      0 0 25px rgba(var(--color-turquoise-primary-rgb), 0.8),
+      0 0 35px rgba(var(--color-turquoise-primary-rgb), 0.6);
+  }
+}
+
+.iceManActive.animated {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulseSpace {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px rgba(var(--color-lavender-primary-rgb), 0.8),
+      0 0 20px rgba(var(--color-lavender-primary-rgb), 0.6),
+      0 0 30px rgba(var(--color-lavender-primary-rgb), 0.4);
+  }
+  50% {
+    text-shadow: 
+      0 0 15px rgba(var(--color-lavender-primary-rgb), 1),
+      0 0 25px rgba(var(--color-lavender-primary-rgb), 0.8),
+      0 0 35px rgba(var(--color-lavender-primary-rgb), 0.6);
+  }
+}
+
+.spaceManActive.animated {
+  animation: glowPulseSpace 2s ease-in-out infinite;
+}
+

@@ -1,0 +1,217 @@
+:root {
+  /* ===== TELEGRAM VIEWPORT - устанавливаются через JS ===== */
+  --tg-viewport-height: 100vh; /* Fallback для браузеров без Telegram */
+  --tg-viewport-stable-height: 100vh; /* Fallback для браузеров без Telegram */
+  --tg-scale-factor: 1; /* Базовое значение, обновляется через JS на основе viewport */
+  
+  /* ===== SAFE AREA INSETS - для устройств с вырезами (notch, Dynamic Island) ===== */
+  --tg-safe-area-top: env(safe-area-inset-top, 0px);
+  --tg-safe-area-right: env(safe-area-inset-right, 0px);
+  --tg-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --tg-safe-area-left: env(safe-area-inset-left, 0px);
+  /* Алиасы для существующего использования */
+  --safe-area-inset-top: var(--tg-safe-area-top);
+  --safe-area-inset-right: var(--tg-safe-area-right);
+  --safe-area-inset-bottom: var(--tg-safe-area-bottom);
+  --safe-area-inset-left: var(--tg-safe-area-left);
+  
+  /* ===== ОСНОВНАЯ ПАЛИТРА: АНАЛОГОВАЯ СХЕМА ===== */
+  
+  /* Синий спектр (70% - доминирующий) */
+  --color-blue-deep: #1565C0;
+  --color-blue-primary: #2196F3;
+  --color-blue-light: #64B5F6;
+  --color-blue-sky: #90CAF9;
+  
+  /* Лавандовый спектр (20% - вторичный) */
+  --color-lavender-deep: #7E57C2;
+  --color-lavender-primary: #9575CD;
+  --color-lavender-light: #B39DDB;
+  --color-lavender-pale: #D1C4E9;
+  
+  /* Бирюзовый спектр (10% - динамика) */
+  --color-turquoise-deep: #00897B;
+  --color-turquoise-primary: #26A69A;
+  --color-turquoise-light: #4DB6AC;
+  --color-turquoise-pale: #80CBC4;
+  
+  /* Коралловый (тёплый акцент) */
+  --color-coral-deep: #FF7043;
+  --color-coral-primary: #FF8A65;
+  --color-coral-light: #FFAB91;
+  
+  /* Мятный (для задержек) */
+  --color-mint-primary: #4DB6AC;
+  --color-mint-light: #80CBC4;
+  
+  /* ===== RGB ПЕРЕМЕННЫЕ ДЛЯ RGBA() ===== */
+  --color-blue-primary-rgb: 33, 150, 243;
+  --color-blue-deep-rgb: 21, 101, 192;
+  --color-lavender-primary-rgb: 149, 117, 205;
+  --color-lavender-deep-rgb: 126, 87, 194;
+  --color-turquoise-primary-rgb: 38, 166, 154;
+  --color-turquoise-light-rgb: 77, 182, 172;
+  --color-coral-primary-rgb: 255, 138, 101;
+  --color-coral-deep-rgb: 255, 112, 67;
+  --color-coral-light-rgb: 255, 171, 145;
+  --color-mint-primary-rgb: 77, 182, 172;
+  --color-text-cream-rgb: 245, 245, 220;
+  --color-bg-secondary-rgb: 22, 33, 62;
+  
+  /* Fallback RGB для случаев, когда CSS переменная недоступна (SSR, ошибки) */
+  --color-fallback-rgb: 33, 150, 243;
+  
+  /* ===== АЛИАСЫ ДЛЯ ОБРАТНОЙ СОВМЕСТИМОСТИ ===== */
+  --color-accent-orange: var(--color-coral-primary);
+  --color-accent-amber: #f7931e; /* Сохранить для мета-информации */
+  --color-accent-primary: var(--color-blue-primary);
+  --color-accent-secondary: var(--color-lavender-primary);
+  --color-accent-dynamic: var(--color-turquoise-primary);
+  --color-accent-warm: var(--color-coral-primary);
+  
+  /* ===== ФОНОВЫЕ ЦВЕТА ===== */
+  --color-bg-primary: #1a1a2e;
+  --color-bg-secondary: #16213e;
+  
+  /* ===== ТЕКСТОВЫЕ ЦВЕТА ===== */
+  --color-text-cream: #f5f5dc;
+  --color-text-beige: #fff8e7;
+  --color-text-white: #FFFFFF;
+  
+  /* ===== ГРАДИЕНТЫ КРУГА ДЫХАНИЯ (ВРАЩАЮЩИЕСЯ) ===== */
+  --circle-gradient-start: var(--color-blue-primary);
+  --circle-gradient-middle: var(--color-turquoise-primary);
+  --circle-gradient-end: var(--color-lavender-primary);
+  --circle-gradient-inhale-start: var(--color-blue-primary);
+  --circle-gradient-inhale-end: var(--color-turquoise-primary);
+  --circle-gradient-exhale-start: var(--color-turquoise-primary);
+  --circle-gradient-exhale-end: var(--color-lavender-primary);
+  
+  /* ===== ФОНОВЫЕ ГРАДИЕНТЫ ===== */
+  --bg-gradient-subtle: linear-gradient(180deg, #1a1a2e 0%, #1e3a5f 100%);
+  
+  /* ===== TELEGRAM THEME COLORS ===== */
+  --tg-theme-bg-color: var(--color-bg-primary);
+  --tg-theme-text-color: var(--color-text-cream);
+  --tg-theme-hint-color: var(--color-text-beige);
+  --tg-theme-link-color: var(--color-coral-primary);
+  --tg-theme-button-color: var(--color-coral-primary);
+  --tg-theme-button-text-color: var(--color-text-cream);
+
+  /* Spacing - Single Source of Truth (viewport units with clamp and scale factor) */
+  --spacing-xs: clamp(0.2rem, calc(0.5vh * var(--tg-scale-factor)), 0.4rem);
+  --spacing-sm: clamp(0.4rem, calc(1vh * var(--tg-scale-factor)), 0.8rem);
+  --spacing-md: clamp(0.6rem, calc(1.5vh * var(--tg-scale-factor)), 1.2rem);
+  --spacing-lg: clamp(0.8rem, calc(2vh * var(--tg-scale-factor)), 1.6rem);
+  --spacing-xl: clamp(1.2rem, calc(3vh * var(--tg-scale-factor)), 2.4rem);
+  --spacing-xxl: clamp(1.6rem, calc(4vh * var(--tg-scale-factor)), 3rem);
+
+  /* Font Sizes - Single Source of Truth (viewport units with clamp and scale factor) */
+  --font-size-xs: clamp(0.7rem, calc(1.5vw * var(--tg-scale-factor)), 0.8rem);
+  --font-size-sm: clamp(0.8rem, calc(2vw * var(--tg-scale-factor)), 0.9rem);
+  --font-size-body: clamp(0.9rem, calc(2.5vw * var(--tg-scale-factor)), 0.95rem);
+  --font-size-md: clamp(0.95rem, calc(3vw * var(--tg-scale-factor)), 1.1rem);
+  --font-size-lg: clamp(1.1rem, calc(4vw * var(--tg-scale-factor)), 1.4rem);
+  --font-size-xl: clamp(1.3rem, calc(5vw * var(--tg-scale-factor)), 1.6rem);
+  --font-size-title: clamp(1.6rem, calc(6vw * var(--tg-scale-factor)), 2.5rem);
+  --font-size-timer: clamp(2.2rem, calc(8vw * var(--tg-scale-factor)), 3.5rem);
+  --font-size-phase-label: clamp(0.9rem, calc(3vw * var(--tg-scale-factor)), 1.3rem);
+
+  /* Component Sizes - Single Source of Truth (with scale factor) */
+  --circle-container-size: clamp(200px, calc(35vw * var(--tg-scale-factor)), 280px);
+  --circle-base-size: clamp(50px, calc(9vw * var(--tg-scale-factor)), 70px);
+  --circle-expanded-size: clamp(200px, calc(35vw * var(--tg-scale-factor)), 280px);
+  --circle-size: var(--circle-base-size);
+  
+  /* Circle Glow Effects */
+  --circle-glow-intensity-base: 0.4;
+  --circle-glow-intensity-pulse: 0.9;
+  --circle-glow-blur-base: 20px;
+  --circle-glow-blur-expanded: 60px;
+  --circle-glow-blur-pulse: 80px;
+  
+  /* Circle Gradient - теперь используется из основной палитры выше */
+  
+  /* Button Sizes - Single Source of Truth (with scale factor) */
+  --button-height: clamp(2.2rem, calc(5.5vh * var(--tg-scale-factor)), 3rem);
+  --button-padding-x: clamp(1.2rem, calc(3.5vw * var(--tg-scale-factor)), 2rem);
+  --button-padding-y: clamp(0.6rem, calc(1.8vh * var(--tg-scale-factor)), 0.9rem);
+  --button-font-size: clamp(0.9rem, calc(2.2vw * var(--tg-scale-factor)), 1rem);
+  --button-min-width: clamp(100px, calc(22vw * var(--tg-scale-factor)), 120px);
+
+  /* Icon Sizes - Single Source of Truth */
+  --icon-size-large: clamp(60px, 10vw, 80px);
+  --icon-size-medium: clamp(45px, 8vw, 60px);
+  --icon-size-small: clamp(30px, 5vw, 40px);
+
+  /* Border Radius - Single Source of Truth */
+  --radius-sm: clamp(0.5rem, 1vw, 0.75rem);
+  --radius-md: clamp(1rem, 2vw, 1.5rem);
+  --radius-lg: clamp(1.5rem, 3vw, 2rem);
+  --radius-full: 50%;
+
+  /* Gaps - Single Source of Truth (with scale factor) */
+  --gap-xs: clamp(0.4rem, calc(1vh * var(--tg-scale-factor)), 0.6rem);
+  --gap-sm: clamp(0.6rem, calc(1.5vh * var(--tg-scale-factor)), 0.8rem);
+  --gap-md: clamp(0.8rem, calc(2vh * var(--tg-scale-factor)), 1.2rem);
+  --gap-lg: clamp(1.2rem, calc(3vh * var(--tg-scale-factor)), 1.6rem);
+  --gap-xl: clamp(1.6rem, calc(4vh * var(--tg-scale-factor)), 2.4rem);
+
+  /* Compact Card Sizes for Grid - Single Source of Truth */
+  --card-padding-compact: clamp(0.5rem, 1.5vh, 1rem);
+  --card-icon-size-compact: clamp(30px, 6vw, 50px);
+  --card-icon-inner-size-compact: clamp(20px, 4vw, 35px);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Учитываем safe areas для полноэкранного режима на устройствах с вырезами */
+  padding: env(safe-area-inset-top, 0px) 
+           env(safe-area-inset-right, 0px) 
+           env(safe-area-inset-bottom, 0px) 
+           env(safe-area-inset-left, 0px);
+}
+
+body {
+  font-family: 'Ysabeau SC', serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-gradient-subtle);
+  color: var(--color-text-cream);
+  overscroll-behavior: none;
+  touch-action: pan-x pan-y;
+}
+
+#root {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Используем Telegram viewport если доступен, иначе fallback на 100vh */
+  min-height: var(--tg-viewport-stable-height, 100vh);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
