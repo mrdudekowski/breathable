@@ -1,4 +1,10 @@
 import { useEffect } from 'react';
+import {
+  isDesktop,
+  calculateMobileScaleFactor,
+  calculateDesktopScaleFactor,
+  calculateDesktopAdditionalScale,
+} from '../utils/viewportHelpers';
 
 /**
  * Интерфейс для Telegram WebApp API.
@@ -46,25 +52,10 @@ function isTelegramWebApp(value: unknown): value is TelegramWebApp {
 }
 
 /**
- * Базовая высота для расчета scale factor (стандартный размер Telegram Mini App).
- * Используется как референс для масштабирования элементов.
+ * Примерная высота контента для расчета дополнительного масштаба на десктоп
+ * Включает: заголовок + карточка + отступы
  */
-const BASE_VIEWPORT_HEIGHT = 650; // px
-
-/**
- * Вычисляет scale factor на основе высоты viewport.
- * Масштабирует UI относительно базовой высоты для корректного отображения на разных экранах.
- * 
- * @param viewportHeight - Высота viewport в пикселях
- * @returns Scale factor в диапазоне [0.7, 1.2]
- */
-const calculateScaleFactor = (viewportHeight: number): number => {
-  // Масштабируем относительно базовой высоты
-  // Для экранов меньше базового - уменьшаем, для больших - увеличиваем
-  const scale = viewportHeight / BASE_VIEWPORT_HEIGHT;
-  // Ограничиваем диапазон масштабирования для предотвращения слишком маленьких/больших элементов
-  return Math.max(0.7, Math.min(1.2, scale));
-};
+const ESTIMATED_CONTENT_HEIGHT = 1000; // px
 
 const isSafeAreaInsets = (value: unknown): value is SafeAreaInsets => {
   if (typeof value !== 'object' || value === null) return false;
@@ -87,17 +78,44 @@ export const useTelegramWebApp = () => {
     let bindViewportCssVars: ((formatter?: (key: string) => string) => unknown) | null = null;
     let requestViewportData: (() => Promise<unknown>) | null = null;
     let getSafeAreaInsets: (() => SafeAreaInsets | undefined) | null = null;
+    let resizeHandler: (() => void) | null = null;
 
     const applyFallbackViewport = () => {
       if (typeof window === 'undefined') return;
-      const fallbackHeight = window.innerHeight;
+      
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const isDesktopView = isDesktop(viewportWidth);
+      
       document.documentElement.style.setProperty(
         '--tg-viewport-stable-height',
-        `${fallbackHeight}px`
+        `${viewportHeight}px`
       );
+      
+      // Рассчитываем scale factor в зависимости от типа устройства
+      let scaleFactor: number;
+      if (isDesktopView) {
+        scaleFactor = calculateDesktopScaleFactor(viewportHeight, viewportWidth);
+        document.documentElement.setAttribute('data-device', 'desktop');
+        
+        // Дополнительный масштаб для десктоп
+        const additionalScale = calculateDesktopAdditionalScale(
+          viewportHeight,
+          ESTIMATED_CONTENT_HEIGHT
+        );
+        document.documentElement.style.setProperty(
+          '--tg-desktop-scale',
+          additionalScale.toString()
+        );
+      } else {
+        scaleFactor = calculateMobileScaleFactor(viewportHeight);
+        document.documentElement.setAttribute('data-device', 'mobile');
+        document.documentElement.style.setProperty('--tg-desktop-scale', '1');
+      }
+      
       document.documentElement.style.setProperty(
         '--tg-scale-factor',
-        calculateScaleFactor(fallbackHeight).toString()
+        scaleFactor.toString()
       );
     };
 
@@ -202,43 +220,72 @@ export const useTelegramWebApp = () => {
 
           // Обработка viewport для корректного масштабирования
           updateViewport = () => {
-            if (!WebApp) return;
+            if (!WebApp && typeof window === 'undefined') return;
             
-            const viewportHeight = WebApp.viewportHeight;
-            const viewportStableHeight = WebApp.viewportStableHeight;
+            const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 0;
+            const viewportHeight = WebApp?.viewportStableHeight ?? 
+              (typeof window !== 'undefined' ? window.innerHeight : 0);
+            const isDesktopView = isDesktop(viewportWidth);
             
-            if (viewportHeight !== undefined) {
+            // Устанавливаем viewport height
+            if (WebApp?.viewportHeight !== undefined) {
               document.documentElement.style.setProperty(
                 '--tg-viewport-height',
+                `${WebApp.viewportHeight}px`
+              );
+            }
+            
+            if (WebApp?.viewportStableHeight !== undefined) {
+              document.documentElement.style.setProperty(
+                '--tg-viewport-stable-height',
+                `${WebApp.viewportStableHeight}px`
+              );
+            } else if (typeof window !== 'undefined') {
+              document.documentElement.style.setProperty(
+                '--tg-viewport-stable-height',
                 `${viewportHeight}px`
               );
             }
             
-            if (viewportStableHeight !== undefined) {
-              document.documentElement.style.setProperty(
-                '--tg-viewport-stable-height',
-                `${viewportStableHeight}px`
-              );
+            // Рассчитываем scale factor в зависимости от типа устройства
+            let scaleFactor: number;
+            if (isDesktopView) {
+              scaleFactor = calculateDesktopScaleFactor(viewportHeight, viewportWidth);
+              document.documentElement.setAttribute('data-device', 'desktop');
               
-              // Рассчитываем и устанавливаем scale factor для динамического масштабирования
-              const scaleFactor = calculateScaleFactor(viewportStableHeight);
-              document.documentElement.style.setProperty(
-                '--tg-scale-factor',
-                scaleFactor.toString()
+              // Дополнительный масштаб для десктоп (для финальной корректировки)
+              const additionalScale = calculateDesktopAdditionalScale(
+                viewportHeight,
+                ESTIMATED_CONTENT_HEIGHT
               );
-            } else if (typeof window !== 'undefined') {
-              // Fallback: используем window.innerHeight если Telegram viewport недоступен
-              const fallbackHeight = window.innerHeight;
-              const scaleFactor = calculateScaleFactor(fallbackHeight);
               document.documentElement.style.setProperty(
-                '--tg-scale-factor',
-                scaleFactor.toString()
+                '--tg-desktop-scale',
+                additionalScale.toString()
               );
+            } else {
+              scaleFactor = calculateMobileScaleFactor(viewportHeight);
+              document.documentElement.setAttribute('data-device', 'mobile');
+              document.documentElement.style.setProperty('--tg-desktop-scale', '1');
             }
+            
+            document.documentElement.style.setProperty(
+              '--tg-scale-factor',
+              scaleFactor.toString()
+            );
           };
 
           // Устанавливаем viewport при инициализации
           updateViewport();
+          
+          // Подписываемся на изменения размера окна для десктоп версии
+          if (typeof window !== 'undefined' && updateViewport) {
+            resizeHandler = () => {
+              if (updateViewport) {
+                updateViewport();
+              }
+            };
+            window.addEventListener('resize', resizeHandler);
+          }
 
           // Подписываемся на изменения viewport
           if (WebApp.onEvent && updateViewport) {
@@ -323,6 +370,9 @@ export const useTelegramWebApp = () => {
       removeViewportChanged?.();
       removeThemeChanged?.();
       removeContentSafeAreaChanged?.();
+      if (resizeHandler && typeof window !== 'undefined') {
+        window.removeEventListener('resize', resizeHandler);
+      }
     };
   }, []);
 

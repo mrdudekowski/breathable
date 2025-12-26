@@ -3,6 +3,10 @@
   --tg-viewport-height: 100vh; /* Fallback для браузеров без Telegram */
   --tg-viewport-stable-height: 100vh; /* Fallback для браузеров без Telegram */
   --tg-scale-factor: 1; /* Базовое значение, обновляется через JS на основе viewport */
+  --tg-desktop-scale: 1; /* Дополнительный масштаб для десктоп версии */
+  
+  /* ===== DESKTOP SCALING ===== */
+  --desktop-content-max-height: 95vh; /* Максимальная высота контента на десктоп */
   
   /* ===== SAFE AREA INSETS - для устройств с вырезами (notch, Dynamic Island) ===== */
   --tg-safe-area-top: env(safe-area-inset-top, 0px);

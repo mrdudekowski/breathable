@@ -56,20 +56,33 @@ Thumbs.db
 *.tsbuildinfo
 
 # Documentation and analysis files (not needed for build)
-ALGORITHM_ANALYSIS.md
+# Ignore all .md files except README.md
+*.md
+!README.md
+# Keep README.md in root for project documentation
+
+# Analysis and planning documents
+ALGORITHM_ANIMATION_ANALYSIS.md
 ANALYSIS_START_BUTTON_ISSUE.md
+CHANNEL_UPDATE_v0.1_alpha.md
 CORRECT_PROBLEM_ANALYSIS.md
 CRITICAL_ANALYSIS_SOLUTIONS.md
 DEEP_ANIMATION_ANALYSIS.md
+DEPLOY_INSTRUCTIONS.md
+DESKTOP_SCALING_PLAN.md
 FADE_OUT_ISSUE_ANALYSIS.md
 FINAL_SIMPLIFIED_PLAN.md
 FIX_PLAN_CIRCLE_JERKING.md
+ICE_MAN_UI_UX_AUDIT.md
 ROUND_NOTIFICATION_ISSUE.md
 ROUNDS_ANALYSIS.md
 SOLUTION_ANALYSIS.md
 README-RULES.md
 SETUP-RULES.md
+
+# Documentation directories
 psy/
+src/docs/
 
 # Note: index.html in root is required for Vite build
 # public/index.html is a duplicate and can be ignored

@@ -1,14 +1,13 @@
 .menu {
   width: 100%;
   max-width: min(600px, 90vw);
-  height: auto;
-  min-height: 100%;
+  height: 100%;
   padding: var(--spacing-xs) var(--spacing-sm) clamp(var(--spacing-sm), 2vh, var(--spacing-md));
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--gap-xs);
-  overflow: auto;
+  overflow: hidden;
   min-height: 0;
   flex: 1 0 auto;
   container-type: inline-size;
@@ -48,6 +47,12 @@
   padding: var(--spacing-xs) 0 clamp(var(--spacing-sm), 2vh, var(--spacing-md));
 }
 
+/* Адаптация для десктоп версии */
+[data-device="desktop"] .practices {
+  margin-top: clamp(var(--spacing-sm), 4vh, var(--spacing-lg));
+  padding: var(--spacing-xs) 0 clamp(var(--spacing-xs), 1vh, var(--spacing-sm));
+}
+
 .flipContainer {
   position: relative;
   width: 100%;
@@ -63,6 +68,12 @@
   min-height: clamp(340px, calc(65vh * var(--tg-scale-factor)), 500px);
   transform-style: preserve-3d;
   cursor: pointer;
+}
+
+/* Адаптация высоты карточки для десктоп */
+[data-device="desktop"] .flipCard {
+  min-height: clamp(300px, calc(50vh * var(--tg-scale-factor) * var(--tg-desktop-scale)), 450px);
+  max-height: calc(var(--desktop-content-max-height) - 200px);
 }
 
 .cardFront,
@@ -90,6 +101,13 @@
     /* Внутренняя тень для объёма */
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Адаптация карточек для десктоп */
+[data-device="desktop"] .cardFront,
+[data-device="desktop"] .cardBack {
+  min-height: clamp(300px, calc(50vh * var(--tg-scale-factor) * var(--tg-desktop-scale)), 450px);
+  max-height: calc(var(--desktop-content-max-height) - 200px);
 }
 
 .cardFront {
@@ -292,6 +310,11 @@
   margin-bottom: var(--spacing-md);
   flex-shrink: 0;
   z-index: 2;
+}
+
+/* Адаптация размера изображения для десктоп */
+[data-device="desktop"] .imageWrapper {
+  height: clamp(150px, 30vh, 250px);
 }
 
 .imageWrapper::after {
