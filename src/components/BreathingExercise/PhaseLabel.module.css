@@ -1,6 +1,6 @@
 .label {
   position: absolute;
-  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-size: clamp(1.25rem, 4vw, 2.25rem);
   font-weight: 300;
   color: var(--color-text-cream);
   opacity: 0.8;
@@ -13,16 +13,16 @@
 
 .left {
   top: 50%;
-  left: 0;
-  transform: translate(-100%, -50%);
-  padding-right: clamp(1rem, 3vw, 2rem);
+  left: clamp(0.5rem, 2vw, 1rem);
+  transform: translate(0, -50%);
+  text-align: left;
 }
 
 .right {
   top: 50%;
-  right: 0;
-  transform: translate(100%, -50%);
-  padding-left: clamp(1rem, 3vw, 2rem);
+  right: clamp(0.5rem, 2vw, 1rem);
+  transform: translate(0, -50%);
+  text-align: right;
 }
 
 .bottom {
@@ -30,5 +30,20 @@
   left: 50%;
   transform: translate(-50%, 100%);
   padding-top: clamp(1rem, 3vw, 2rem);
+}
+
+/* Дополнительное уменьшение шрифта для очень маленьких экранов */
+@media (max-width: 360px) {
+  .label {
+    font-size: clamp(1rem, 3.5vw, 1.5rem);
+  }
+  
+  .left {
+    left: clamp(0.25rem, 1.5vw, 0.75rem);
+  }
+  
+  .right {
+    right: clamp(0.25rem, 1.5vw, 0.75rem);
+  }
 }
 
