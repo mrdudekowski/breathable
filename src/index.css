@@ -130,6 +130,9 @@
   /* Phase Label Offset - отступ между краем кольца и надписями "Вдох"/"Выдох" */
   --phase-label-offset: clamp(0.5rem, calc(2vw * var(--tg-scale-factor)), 1.5rem);
 
+  /* Phase Label Shift - сдвиг ближе к границе viewport (адаптивный для разных разрешений) */
+  --phase-label-shift: 10px; /* Базовое значение для десктоп */
+
   /* Circle Glow Effects */
   --circle-glow-intensity-base: 0.4;
   --circle-glow-intensity-pulse: 0.9;

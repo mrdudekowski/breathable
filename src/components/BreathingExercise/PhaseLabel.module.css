@@ -11,25 +11,33 @@
   white-space: nowrap;
 }
 
-/* Позиционирование относительно .circleWrapper (100% от .content)
- * Формула: calc((100% - var(--circle-container-size)) / 2 - var(--phase-label-offset))
- * - 100% = ширина .circleWrapper (равна ширине .content)
- * - var(--circle-container-size) = ширина контейнера круга
- * - (100% - var(--circle-container-size)) / 2 = расстояние от края wrapper до края контейнера
+/* Позиционирование относительно viewport для точного центрирования
+ * Формула: calc((100vw - var(--circle-container-size)) / 2 - var(--spacing-sm) - var(--phase-label-offset) - [shift])
+ * - 100vw = полная ширина viewport
+ * - var(--circle-container-size) = ширина контейнера круга (в vw units)
+ * - (100vw - var(--circle-container-size)) / 2 = расстояние от края viewport до края круга (центрирование)
+ * - var(--spacing-sm) = горизонтальный padding .exercise (компенсация смещения)
  * - var(--phase-label-offset) = адаптивный отступ между краем контейнера и надписью
+ * - [shift] = адаптивный сдвиг ближе к границе viewport (20px мобильные, 15px планшеты, 10px десктоп)
  * - translateX(-100%) для .left = центрирование текста влево от позиции
  * - translateX(100%) для .right = центрирование текста вправо от позиции
  */
 .left {
   top: 50%;
-  left: calc((100% - var(--circle-container-size)) / 2 - var(--phase-label-offset));
+  left: calc(
+    (100vw - var(--circle-container-size)) / 2 - var(--spacing-sm) - var(--phase-label-offset) -
+      var(--phase-label-shift)
+  );
   transform: translateX(-100%) translateY(-50%);
   text-align: center;
 }
 
 .right {
   top: 50%;
-  right: calc((100% - var(--circle-container-size)) / 2 - var(--phase-label-offset));
+  right: calc(
+    (100vw - var(--circle-container-size)) / 2 - var(--spacing-sm) - var(--phase-label-offset) -
+      var(--phase-label-shift)
+  );
   transform: translateX(100%) translateY(-50%);
   text-align: center;
 }
@@ -41,18 +49,62 @@
   padding-top: clamp(1rem, 3vw, 2rem);
 }
 
+/* Адаптивные сдвиги для разных разрешений - двигаем ближе к границе viewport */
+
+/* Мобильные устройства (< 480px) - максимальный сдвиг 20px */
+@media (max-width: 479px) {
+  .left {
+    left: calc(
+      (100vw - var(--circle-container-size)) / 2 - var(--spacing-sm) - var(--phase-label-offset) -
+        20px
+    );
+  }
+
+  .right {
+    right: calc(
+      (100vw - var(--circle-container-size)) / 2 - var(--spacing-sm) - var(--phase-label-offset) -
+        20px
+    );
+  }
+}
+
+/* Планшеты (480px - 767px) - средний сдвиг 15px */
+@media (min-width: 480px) and (max-width: 767px) {
+  .left {
+    left: calc(
+      (100vw - var(--circle-container-size)) / 2 - var(--spacing-sm) - var(--phase-label-offset) -
+        15px
+    );
+  }
+
+  .right {
+    right: calc(
+      (100vw - var(--circle-container-size)) / 2 - var(--spacing-sm) - var(--phase-label-offset) -
+        15px
+    );
+  }
+}
+
+/* Десктоп (>= 768px) - минимальный сдвиг 10px (установлен в базовых стилях через --phase-label-shift) */
+
 /* Дополнительное уменьшение шрифта для очень маленьких экранов */
 @media (max-width: 360px) {
   .label {
     font-size: clamp(1rem, 3.5vw, 1.5rem);
   }
 
-  /* Формула позиционирования остается той же для консистентности на всех устройствах */
+  /* Формула позиционирования с учетом мобильного сдвига 20px */
   .left {
-    left: calc((100% - var(--circle-container-size)) / 2 - var(--phase-label-offset));
+    left: calc(
+      (100vw - var(--circle-container-size)) / 2 - var(--spacing-sm) - var(--phase-label-offset) -
+        20px
+    );
   }
 
   .right {
-    right: calc((100% - var(--circle-container-size)) / 2 - var(--phase-label-offset));
+    right: calc(
+      (100vw - var(--circle-container-size)) / 2 - var(--spacing-sm) - var(--phase-label-offset) -
+        20px
+    );
   }
 }
