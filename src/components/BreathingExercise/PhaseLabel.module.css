@@ -13,16 +13,16 @@
 
 .left {
   top: 50%;
-  left: clamp(0.5rem, 2vw, 1rem);
+  left: calc(-25vw - var(--circle-container-size) / 4);
   transform: translate(0, -50%);
-  text-align: left;
+  text-align: center;
 }
 
 .right {
   top: 50%;
-  right: clamp(0.5rem, 2vw, 1rem);
+  right: calc(-25vw - var(--circle-container-size) / 4);
   transform: translate(0, -50%);
-  text-align: right;
+  text-align: center;
 }
 
 .bottom {
@@ -38,12 +38,13 @@
     font-size: clamp(1rem, 3.5vw, 1.5rem);
   }
   
+  /* Формула позиционирования остается той же для консистентности на всех устройствах */
   .left {
-    left: clamp(0.25rem, 1.5vw, 0.75rem);
+    left: calc(-25vw - var(--circle-container-size) / 4);
   }
   
   .right {
-    right: clamp(0.25rem, 1.5vw, 0.75rem);
+    right: calc(-25vw - var(--circle-container-size) / 4);
   }
 }
 

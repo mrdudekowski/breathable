@@ -153,8 +153,6 @@
   justify-content: center;
   width: 100%;
   overflow: visible;
-  /* Добавляем небольшой padding для безопасности, чтобы слова не обрезались */
-  padding: 0 clamp(0.5rem, 2vw, 1rem);
 }
 
 .controls {
