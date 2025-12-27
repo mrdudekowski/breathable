@@ -20,14 +20,14 @@
  */
 .left {
   top: 50%;
-  left: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2);
+  left: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2 - 10px);
   transform: translate(0, -50%);
   text-align: center;
 }
 
 .right {
   top: 50%;
-  right: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2);
+  right: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2 - 10px);
   transform: translate(0, -50%);
   text-align: center;
 }
@@ -47,10 +47,10 @@
 
   /* Формула позиционирования остается той же для консистентности на всех устройствах */
   .left {
-    left: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2);
+    left: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2 - 10px);
   }
 
   .right {
-    right: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2);
+    right: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2 - 10px);
   }
 }
