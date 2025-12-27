@@ -260,3 +260,17 @@ textarea {
   -ms-user-select: text;
   user-select: text;
 }
+
+/* Отключение контекстного меню и копирования для изображений */
+img,
+svg,
+picture {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  pointer-events: auto;
+  /* Дополнительная защита от контекстного меню */
+  -webkit-touch-callout: none;
+}
