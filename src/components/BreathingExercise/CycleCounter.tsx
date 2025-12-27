@@ -10,11 +10,11 @@ interface CycleCounterProps {
   animationDuration: number; // Половина длительности фазы для fade анимации
 }
 
-export const CycleCounter = ({ 
-  cycle, 
-  phase, 
+export const CycleCounter = ({
+  cycle,
+  phase,
   progress,
-  animationDuration: _animationDuration 
+  animationDuration: _animationDuration,
 }: CycleCounterProps) => {
   // Вычисляем динамический opacity на основе прогресса фазы
   // Синхронизируется с анимацией круга дыхания (обновляется каждую секунду)
@@ -48,15 +48,15 @@ export const CycleCounter = ({
     <motion.div
       className={styles.counter}
       initial={{ opacity: 0 }}
-      animate={{ 
-        opacity: dynamicOpacity
+      animate={{
+        opacity: dynamicOpacity,
       }}
       exit={{ opacity: 0 }}
-      transition={{ 
+      transition={{
         opacity: {
           duration: 0.3,
-          ease: 'easeInOut'
-        }
+          ease: 'easeInOut',
+        },
       }}
     >
       {cycle}

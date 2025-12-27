@@ -32,7 +32,7 @@ export const isDesktop = (viewportWidth: number): boolean => {
 /**
  * Вычисляет scale factor для мобильных устройств
  * Масштабирует UI относительно базовой высоты для корректного отображения на разных экранах
- * 
+ *
  * @param viewportHeight - Высота viewport в пикселях
  * @returns Scale factor в диапазоне [0.7, 1.2]
  */
@@ -47,7 +47,7 @@ export const calculateMobileScaleFactor = (viewportHeight: number): number => {
 /**
  * Вычисляет scale factor для десктоп версии
  * На десктопе масштабируем более агрессивно, чтобы поместить контент в viewport
- * 
+ *
  * @param viewportHeight - Высота viewport в пикселях
  * @param viewportWidth - Ширина viewport в пикселях
  * @returns Scale factor в диапазоне [0.6, 1.0]
@@ -59,10 +59,10 @@ export const calculateDesktopScaleFactor = (
   // Используем меньшую из высоты или ширины для расчета
   // Это гарантирует, что контент поместится в оба измерения
   const baseDimension = Math.min(viewportHeight, viewportWidth);
-  
+
   // Рассчитываем scale относительно базовой высоты десктоп
   const scale = baseDimension / BASE_DESKTOP_HEIGHT;
-  
+
   // Для десктоп ограничиваем диапазон масштабирования [0.6, 1.0]
   // 0.6 - минимальный масштаб (для очень больших экранов)
   // 1.0 - максимальный масштаб (для стандартных десктоп)
@@ -72,7 +72,7 @@ export const calculateDesktopScaleFactor = (
 /**
  * Вычисляет дополнительный масштаб для десктоп на основе соотношения контента к viewport
  * Используется для финальной корректировки, чтобы гарантировать отсутствие скролла
- * 
+ *
  * @param viewportHeight - Высота viewport в пикселях
  * @param estimatedContentHeight - Примерная высота контента в пикселях
  * @returns Дополнительный scale factor в диапазоне [0.7, 1.0]
@@ -88,4 +88,3 @@ export const calculateDesktopAdditionalScale = (
   // Ограничиваем минимальным значением для читаемости
   return Math.max(0.7, additionalScale);
 };
-

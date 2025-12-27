@@ -26,7 +26,7 @@ export const SpeedToggle = ({ selectedSpeedId, onSpeedChange, disabled }: SpeedT
 
   const handleKeyDown = (event: React.KeyboardEvent, speedId: BreathSpeedId) => {
     if (disabled === true) return;
-    
+
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       if (selectedSpeedId !== speedId) {
@@ -42,7 +42,7 @@ export const SpeedToggle = ({ selectedSpeedId, onSpeedChange, disabled }: SpeedT
           type="button"
           className={`${styles.option} ${styles.iceMan} ${isIceManActive ? styles.iceManActive : ''} ${isIceManActive ? styles.animated : ''}`}
           onClick={handleIceManClick}
-          onKeyDown={(e) => handleKeyDown(e, 'ice-man')}
+          onKeyDown={e => handleKeyDown(e, 'ice-man')}
           disabled={disabled}
           aria-label="Ice Man - быстрый режим дыхания"
           aria-checked={isIceManActive}
@@ -53,12 +53,12 @@ export const SpeedToggle = ({ selectedSpeedId, onSpeedChange, disabled }: SpeedT
         >
           Ice Man
         </motion.button>
-        
+
         <motion.button
           type="button"
           className={`${styles.option} ${styles.spaceMan} ${isSpaceManActive ? styles.spaceManActive : ''} ${isSpaceManActive ? styles.animated : ''}`}
           onClick={handleSpaceManClick}
-          onKeyDown={(e) => handleKeyDown(e, 'space-man')}
+          onKeyDown={e => handleKeyDown(e, 'space-man')}
           disabled={disabled}
           aria-label="Space Man - медленный режим дыхания"
           aria-checked={isSpaceManActive}
@@ -73,8 +73,3 @@ export const SpeedToggle = ({ selectedSpeedId, onSpeedChange, disabled }: SpeedT
     </div>
   );
 };
-
-
-
-
-

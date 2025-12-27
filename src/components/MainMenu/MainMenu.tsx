@@ -32,7 +32,7 @@ export const MainMenu = ({ onSelectPractice }: MainMenuProps) => {
     if (target.closest(`.${styles.breatheButton}`)) {
       return;
     }
-    setIsFlipped((prev) => !prev);
+    setIsFlipped(prev => !prev);
   };
 
   const handleBreatheClick = () => {
@@ -40,15 +40,21 @@ export const MainMenu = ({ onSelectPractice }: MainMenuProps) => {
   };
 
   return (
-    <motion.div
-      className={styles.menu}
-      initial="hidden"
-      animate="visible"
-    >
-      <motion.h1 className={styles.title} initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+    <motion.div className={styles.menu} initial="hidden" animate="visible">
+      <motion.h1
+        className={styles.title}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         Breathable 0.1 Alpha
       </motion.h1>
-      <motion.p className={styles.subtitle} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.6 }}>
+      <motion.p
+        className={styles.subtitle}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.6 }}
+      >
         Дыхательные практики
       </motion.p>
       <div className={styles.practices}>
@@ -69,7 +75,7 @@ export const MainMenu = ({ onSelectPractice }: MainMenuProps) => {
               {/* Лицевая сторона */}
               <div className={styles.cardFront}>
                 <div className={styles.imageWrapper}>
-                  <img 
+                  <img
                     src={`${import.meta.env.BASE_URL}assets/iceman-card/iceman.webp`}
                     srcSet={`${import.meta.env.BASE_URL}assets/iceman-card/iceman.webp 1x, ${import.meta.env.BASE_URL}assets/iceman-card/iceman.webp 2x`}
                     sizes="(max-width: 360px) 100vw, (max-width: 600px) 90vw, 500px"
@@ -94,59 +100,59 @@ export const MainMenu = ({ onSelectPractice }: MainMenuProps) => {
               </div>
 
               {/* Обратная сторона */}
-              <div 
+              <div
                 className={styles.cardBack}
                 style={{
                   backgroundImage: `image-set(url('${import.meta.env.BASE_URL}assets/iceman-card/wim.webp') 1x, url('${import.meta.env.BASE_URL}assets/iceman-card/wim.webp') 2x)`,
                 }}
               >
                 {/* Градиентный оверлей через ::before */}
-                
+
                 <div className={styles.warningHeaderBlock}>
                   <div className={styles.warningHeader}>
-                    <svg 
+                    <svg
                       className={styles.warningIcon}
-                      xmlns="http://www.w3.org/2000/svg" 
+                      xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 512 512"
                       aria-hidden="true"
                     >
-                      <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/>
+                      <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" />
                     </svg>
                     <h3 className={styles.warningTitle}>Важная информация</h3>
                   </div>
                 </div>
-                
+
                 <div className={styles.symptomsBlock}>
-                  <p className={styles.warningText}>
-                    Во время практики вы можете испытывать:
-                  </p>
+                  <p className={styles.warningText}>Во время практики вы можете испытывать:</p>
                   <ul className={styles.warningList}>
                     <li>Покалывание в конечностях</li>
                     <li>Головокружение</li>
                     <li>Изменение температуры тела</li>
                   </ul>
                 </div>
-                
+
                 <div className={styles.drivingWarning}>
-                  <svg 
+                  <svg
                     className={styles.drivingWarningIcon}
-                    xmlns="http://www.w3.org/2000/svg" 
+                    xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     aria-hidden="true"
                   >
-                    <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/>
+                    <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" />
                   </svg>
                   <p className={styles.drivingWarningText}>
-                    Не занимайтесь этой практикой во время вождения автомобиля или управления механизмами.
+                    Не занимайтесь этой практикой во время вождения автомобиля или управления
+                    механизмами.
                   </p>
                 </div>
-                
+
                 <div className={styles.discomfortBlock}>
                   <p className={styles.warningText}>
-                    Если вы чувствуете сильный дискомфорт, прекратите упражнение и вернитесь к нормальному дыханию.
+                    Если вы чувствуете сильный дискомфорт, прекратите упражнение и вернитесь к
+                    нормальному дыханию.
                   </p>
                 </div>
-                
+
                 <motion.button
                   type="button"
                   className={styles.breatheButton}

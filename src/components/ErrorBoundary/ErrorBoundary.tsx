@@ -14,10 +14,10 @@ interface ErrorBoundaryState {
 
 /**
  * Error Boundary компонент для обработки ошибок в React компонентах.
- * 
+ *
  * Перехватывает ошибки в дочерних компонентах, логирует их и отображает fallback UI
  * вместо полного краха приложения.
- * 
+ *
  * Подготовлен для будущей интеграции с Sentry для логирования ошибок в production.
  */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     // Логируем ошибку для отладки
     // В будущем здесь будет интеграция с Sentry
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+
     this.setState({
       error,
       errorInfo,
@@ -86,7 +86,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             </p>
             {import.meta.env.DEV && this.state.error && (
               <details className={styles.errorDetails}>
-                <summary className={styles.errorSummary}>Детали ошибки (только в dev-режиме)</summary>
+                <summary className={styles.errorSummary}>
+                  Детали ошибки (только в dev-режиме)
+                </summary>
                 <pre className={styles.errorStack}>
                   {this.state.error.toString()}
                   {this.state.errorInfo?.componentStack}

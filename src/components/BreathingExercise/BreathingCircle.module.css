@@ -20,7 +20,11 @@
   height: var(--circle-base-size);
   aspect-ratio: 1;
   border-radius: var(--radius-full);
-  background: radial-gradient(circle, var(--circle-gradient-start) 0%, var(--circle-gradient-end) 100%);
+  background: radial-gradient(
+    circle,
+    var(--circle-gradient-start) 0%,
+    var(--circle-gradient-end) 100%
+  );
   transform-origin: center center;
   pointer-events: none;
   z-index: 1; /* Слой свечения под основным кругом */
@@ -31,7 +35,11 @@
   height: var(--circle-base-size);
   aspect-ratio: 1;
   border-radius: var(--radius-full);
-  background: radial-gradient(circle, var(--circle-gradient-start) 0%, var(--circle-gradient-end) 100%);
+  background: radial-gradient(
+    circle,
+    var(--circle-gradient-start) 0%,
+    var(--circle-gradient-end) 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;

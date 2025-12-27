@@ -56,7 +56,7 @@
 .iceManActive {
   color: var(--color-turquoise-primary);
   opacity: 1;
-  text-shadow: 
+  text-shadow:
     0 0 10px rgba(var(--color-turquoise-primary-rgb), 0.8),
     0 0 20px rgba(var(--color-turquoise-primary-rgb), 0.6),
     0 0 30px rgba(var(--color-turquoise-primary-rgb), 0.4);
@@ -70,7 +70,7 @@
 .spaceManActive {
   color: var(--color-lavender-primary);
   opacity: 1;
-  text-shadow: 
+  text-shadow:
     0 0 10px rgba(var(--color-lavender-primary-rgb), 0.8),
     0 0 20px rgba(var(--color-lavender-primary-rgb), 0.6),
     0 0 30px rgba(var(--color-lavender-primary-rgb), 0.4);
@@ -79,14 +79,15 @@
 
 /* Анимация для плавного переключения */
 @keyframes glowPulse {
-  0%, 100% {
-    text-shadow: 
+  0%,
+  100% {
+    text-shadow:
       0 0 10px rgba(var(--color-turquoise-primary-rgb), 0.8),
       0 0 20px rgba(var(--color-turquoise-primary-rgb), 0.6),
       0 0 30px rgba(var(--color-turquoise-primary-rgb), 0.4);
   }
   50% {
-    text-shadow: 
+    text-shadow:
       0 0 15px rgba(var(--color-turquoise-primary-rgb), 1),
       0 0 25px rgba(var(--color-turquoise-primary-rgb), 0.8),
       0 0 35px rgba(var(--color-turquoise-primary-rgb), 0.6);
@@ -98,14 +99,15 @@
 }
 
 @keyframes glowPulseSpace {
-  0%, 100% {
-    text-shadow: 
+  0%,
+  100% {
+    text-shadow:
       0 0 10px rgba(var(--color-lavender-primary-rgb), 0.8),
       0 0 20px rgba(var(--color-lavender-primary-rgb), 0.6),
       0 0 30px rgba(var(--color-lavender-primary-rgb), 0.4);
   }
   50% {
-    text-shadow: 
+    text-shadow:
       0 0 15px rgba(var(--color-lavender-primary-rgb), 1),
       0 0 25px rgba(var(--color-lavender-primary-rgb), 0.8),
       0 0 35px rgba(var(--color-lavender-primary-rgb), 0.6);
@@ -115,4 +117,3 @@
 .spaceManActive.animated {
   animation: glowPulseSpace 2s ease-in-out infinite;
 }
-

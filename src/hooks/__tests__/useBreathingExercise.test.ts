@@ -179,39 +179,39 @@ describe('useBreathingExercise', () => {
     it('должен сохранять previousHoldType при переходе от зелёной задержки к вдоху', () => {
       const practiceWithRounds: BreathingPracticeConfig = {
         ...mockPractice,
-        rounds: [{
-          id: 'round1',
-          index: 1,
-          cycles: 1,
-          finalHoldPhase: 'exhale',
-          finalHoldDuration: 2,
-          breathSpeedId: 'ice-man',
-        }],
+        rounds: [
+          {
+            id: 'round1',
+            index: 1,
+            cycles: 1,
+            finalHoldPhase: 'exhale',
+            finalHoldDuration: 2,
+            breathSpeedId: 'ice-man',
+          },
+        ],
       };
-      
-      const { result } = renderHook(() => 
-        useBreathingExercise({ practice: practiceWithRounds })
-      );
-      
+
+      const { result } = renderHook(() => useBreathingExercise({ practice: practiceWithRounds }));
+
       act(() => {
         result.current.startExercise();
       });
-      
+
       // Продвигаем до завершения выдоха (последний цикл)
       act(() => {
         jest.advanceTimersByTime(2000); // inhale
         jest.advanceTimersByTime(2000); // exhale
       });
-      
+
       // Проверяем, что началась зелёная задержка
       expect(result.current.state.currentPhase).toBe('hold');
       expect(result.current.state.currentHoldType).toBe('round-exhale');
-      
+
       // Продвигаем до завершения зелёной задержки
       act(() => {
         jest.advanceTimersByTime(2000); // зелёная задержка
       });
-      
+
       // Проверяем, что previousHoldType сохранен
       expect(result.current.state.currentPhase).toBe('inhale');
       expect(result.current.state.previousHoldType).toBe('round-exhale');
@@ -240,34 +240,32 @@ describe('useBreathingExercise', () => {
         ],
         globalInhaleHoldDuration: 15,
       };
-      
-      const { result } = renderHook(() => 
-        useBreathingExercise({ practice: practiceWithRounds })
-      );
-      
+
+      const { result } = renderHook(() => useBreathingExercise({ practice: practiceWithRounds }));
+
       act(() => {
         result.current.startExercise();
       });
-      
+
       // Продвигаем до завершения выдоха
       act(() => {
         jest.advanceTimersByTime(2000); // inhale
         jest.advanceTimersByTime(2000); // exhale
       });
-      
+
       // Продвигаем до завершения зелёной задержки
       act(() => {
         jest.advanceTimersByTime(2000); // зелёная задержка
       });
-      
+
       // Проверяем, что previousHoldType установлен
       expect(result.current.state.previousHoldType).toBe('round-exhale');
-      
+
       // Продвигаем до завершения вдоха после зелёной задержки
       act(() => {
         jest.advanceTimersByTime(4000); // вдох (Ice Man: 2 * 2 = 4 сек)
       });
-      
+
       // Проверяем, что началась синяя задержка (round-inhale для первого раунда, так как есть второй)
       expect(result.current.state.currentPhase).toBe('hold');
       expect(result.current.state.currentHoldType).toBe('round-inhale');
@@ -276,32 +274,32 @@ describe('useBreathingExercise', () => {
     it('не должен переходить к синей задержке для обычного вдоха на последнем цикле', () => {
       const practiceWithRounds: BreathingPracticeConfig = {
         ...mockPractice,
-        rounds: [{
-          id: 'round1',
-          index: 1,
-          cycles: 2,
-          finalHoldPhase: 'exhale',
-          finalHoldDuration: 2,
-          breathSpeedId: 'ice-man',
-        }],
+        rounds: [
+          {
+            id: 'round1',
+            index: 1,
+            cycles: 2,
+            finalHoldPhase: 'exhale',
+            finalHoldDuration: 2,
+            breathSpeedId: 'ice-man',
+          },
+        ],
         globalInhaleHoldDuration: 15,
       };
-      
-      const { result } = renderHook(() => 
-        useBreathingExercise({ practice: practiceWithRounds })
-      );
-      
+
+      const { result } = renderHook(() => useBreathingExercise({ practice: practiceWithRounds }));
+
       act(() => {
         result.current.startExercise();
       });
-      
+
       // Продвигаем до второго цикла (последний цикл)
       act(() => {
         jest.advanceTimersByTime(2000); // inhale цикл 1
         jest.advanceTimersByTime(2000); // exhale цикл 1
         jest.advanceTimersByTime(2000); // inhale цикл 2 (последний)
       });
-      
+
       // Проверяем, что НЕ началась синяя задержка (previousHoldType не установлен)
       expect(result.current.state.currentPhase).toBe('exhale');
       expect(result.current.state.previousHoldType).toBeUndefined();

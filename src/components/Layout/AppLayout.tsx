@@ -6,9 +6,5 @@ interface AppLayoutProps {
 }
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
-  return (
-    <div className={styles.layout}>
-      {children}
-    </div>
-  );
+  return <div className={styles.layout}>{children}</div>;
 };

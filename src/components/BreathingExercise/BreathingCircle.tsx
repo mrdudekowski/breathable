@@ -47,14 +47,11 @@ const getActiveScaleTarget = (
  * Вычисляет угол градиента для создания эффекта вращения
  * Угол меняется в зависимости от фазы и прогресса для визуального отображения движения дыхания
  */
-const getGradientAngle = (
-  currentPhase: BreathingPhase,
-  currentProgress: number
-): number => {
+const getGradientAngle = (currentPhase: BreathingPhase, currentProgress: number): number => {
   if (currentPhase === 'inhale') {
-    return 135 + (currentProgress * 90);
+    return 135 + currentProgress * 90;
   } else if (currentPhase === 'exhale') {
-    return 225 + (currentProgress * 90);
+    return 225 + currentProgress * 90;
   }
   return 180;
 };
@@ -94,28 +91,40 @@ export const BreathingCircle = ({
   const progress: number = isRunning ? clampedProgress : 0;
 
   // Мемоизируем цвета для оптимизации - избегаем повторных вызовов getRgbaFromVariable
-  const mintColors = useMemo(() => ({
-    high: getRgbaFromVariable('--color-mint-primary-rgb', 0.9),
-    medium: getRgbaFromVariable('--color-mint-primary-rgb', 0.7),
-    low: getRgbaFromVariable('--color-mint-primary-rgb', 0.6),
-    veryLow: getRgbaFromVariable('--color-mint-primary-rgb', 0.4),
-  }), []);
+  const mintColors = useMemo(
+    () => ({
+      high: getRgbaFromVariable('--color-mint-primary-rgb', 0.9),
+      medium: getRgbaFromVariable('--color-mint-primary-rgb', 0.7),
+      low: getRgbaFromVariable('--color-mint-primary-rgb', 0.6),
+      veryLow: getRgbaFromVariable('--color-mint-primary-rgb', 0.4),
+    }),
+    []
+  );
 
-  const bluePrimaryColors = useMemo(() => ({
-    high: getRgbaFromVariable('--color-blue-primary-rgb', 0.9),
-    medium: getRgbaFromVariable('--color-blue-primary-rgb', 0.5),
-    low: getRgbaFromVariable('--color-blue-primary-rgb', 0.3),
-    veryLow: getRgbaFromVariable('--color-blue-primary-rgb', 0.25),
-  }), []);
+  const bluePrimaryColors = useMemo(
+    () => ({
+      high: getRgbaFromVariable('--color-blue-primary-rgb', 0.9),
+      medium: getRgbaFromVariable('--color-blue-primary-rgb', 0.5),
+      low: getRgbaFromVariable('--color-blue-primary-rgb', 0.3),
+      veryLow: getRgbaFromVariable('--color-blue-primary-rgb', 0.25),
+    }),
+    []
+  );
 
-  const turquoiseColors = useMemo(() => ({
-    high: getRgbaFromVariable('--color-turquoise-primary-rgb', 0.9),
-    low: getRgbaFromVariable('--color-turquoise-primary-rgb', 0.3),
-  }), []);
+  const turquoiseColors = useMemo(
+    () => ({
+      high: getRgbaFromVariable('--color-turquoise-primary-rgb', 0.9),
+      low: getRgbaFromVariable('--color-turquoise-primary-rgb', 0.3),
+    }),
+    []
+  );
 
-  const lavenderColors = useMemo(() => ({
-    high: getRgbaFromVariable('--color-lavender-primary-rgb', 0.9),
-  }), []);
+  const lavenderColors = useMemo(
+    () => ({
+      high: getRgbaFromVariable('--color-lavender-primary-rgb', 0.9),
+    }),
+    []
+  );
 
   // Статичный цвет для mint hold (используется в анимации пульсации)
   const mintHoldColor = useMemo(() => {
@@ -126,8 +135,8 @@ export const BreathingCircle = ({
   // Определяем цвета и градиент в зависимости от фазы
   // Используем мятный цвет для round-exhale, чтобы визуально отличать от обычных фаз
   // и создать ассоциацию с холодным, спокойным состоянием задержки
-  const circleStyle = useMemo((): { 
-    background: string; 
+  const circleStyle = useMemo((): {
+    background: string;
     ringColor: string;
   } => {
     // Проверяем задержки только когда phase === 'hold', чтобы правильно применять градиенты для задержек
@@ -140,7 +149,7 @@ export const BreathingCircle = ({
       // Используем градиент выдоха (бирюза → лаванда) для задержки на вдохе, продолжая визуальный поток выдоха
       // Угол вычисляется на основе прогресса задержки для плавного вращения
       const holdProgress = phaseDuration > 0 ? (phaseDuration - timeRemaining) / phaseDuration : 0;
-      const angle = 225 + (holdProgress * 90); // Вращение от 225deg до 315deg, как для выдоха
+      const angle = 225 + holdProgress * 90; // Вращение от 225deg до 315deg, как для выдоха
       return {
         background: `linear-gradient(${angle}deg, ${turquoiseColors.high} 0%, ${lavenderColors.high} 100%)`,
         ringColor: turquoiseColors.low,
@@ -166,7 +175,17 @@ export const BreathingCircle = ({
         ringColor: bluePrimaryColors.low,
       };
     }
-  }, [holdType, phase, progress, timeRemaining, phaseDuration, mintColors, bluePrimaryColors, turquoiseColors, lavenderColors]);
+  }, [
+    holdType,
+    phase,
+    progress,
+    timeRemaining,
+    phaseDuration,
+    mintColors,
+    bluePrimaryColors,
+    turquoiseColors,
+    lavenderColors,
+  ]);
 
   // Мягкое свечение с размытием
   // Интенсивность свечения меняется динамически для создания эффекта пульсации дыхания
@@ -179,7 +198,7 @@ export const BreathingCircle = ({
         boxShadow: `0 0 25px ${mintColors.high}, 0 0 37px ${mintColors.low}`,
       };
     }
-    
+
     if (phase === 'hold' && (holdType === 'global-inhale' || holdType === 'round-inhale')) {
       // Пульсирующее свечение создает динамический эффект для задержки на вдохе, используя цвета выдоха
       const turquoiseHigh = getRgbaFromVariable('--color-turquoise-primary-rgb', 0.9);
@@ -197,23 +216,18 @@ export const BreathingCircle = ({
     }
 
     // Динамическое свечение синхронизировано с дыханием для визуальной обратной связи
-    const glowIntensity = phase === 'inhale'
-      ? 0.4 + (progress * 0.3)
-      : phase === 'exhale'
-      ? 0.7 - (progress * 0.3)
-      : 0.4;
+    const glowIntensity =
+      phase === 'inhale' ? 0.4 + progress * 0.3 : phase === 'exhale' ? 0.7 - progress * 0.3 : 0.4;
 
-    const blurAmount = phase === 'inhale'
-      ? `${5 + progress * 10}px`
-      : phase === 'exhale'
-      ? `${15 - progress * 10}px`
-      : '5px';
+    const blurAmount =
+      phase === 'inhale'
+        ? `${5 + progress * 10}px`
+        : phase === 'exhale'
+          ? `${15 - progress * 10}px`
+          : '5px';
 
-    const shadowSize = phase === 'inhale'
-      ? 20 + (progress * 20)
-      : phase === 'exhale'
-      ? 40 - (progress * 20)
-      : 20;
+    const shadowSize =
+      phase === 'inhale' ? 20 + progress * 20 : phase === 'exhale' ? 40 - progress * 20 : 20;
 
     // Используем динамическую интенсивность для создания плавного перехода свечения
     const dynamicBlueHigh = getRgbaFromVariable('--color-blue-primary-rgb', glowIntensity);
@@ -229,9 +243,10 @@ export const BreathingCircle = ({
   const isIdle: boolean = !isRunning;
   const isHoldPhase: boolean = phase === 'hold' && holdType !== undefined;
   const isMintHold: boolean = isHoldPhase && holdType === 'round-exhale';
-  const isBlueHold: boolean = isHoldPhase && (holdType === 'global-inhale' || holdType === 'round-inhale');
+  const isBlueHold: boolean =
+    isHoldPhase && (holdType === 'global-inhale' || holdType === 'round-inhale');
   const isPausePhase: boolean = phase === 'pause';
-  
+
   // Вычисляем видимость счетчика циклов на основе прогресса фазы
   // Inhale: fade in завершается к 50% (когда круг расширился на 50%)
   // Exhale: fade out завершается к 50% (когда круг сжался на 50%)
@@ -239,20 +254,29 @@ export const BreathingCircle = ({
   // Плавность обеспечивается через dynamicOpacity в CycleCounter
   const shouldShowCycleCounter = useMemo(() => {
     // Базовое условие: только на inhale/exhale, не на hold/pause
-    if (phase === 'hold' || phase === 'pause' || isHoldPhase || isPausePhase || roundCycle === undefined) {
+    if (
+      phase === 'hold' ||
+      phase === 'pause' ||
+      isHoldPhase ||
+      isPausePhase ||
+      roundCycle === undefined
+    ) {
       return false;
     }
-    
+
     // Не показываем счетчик на inhale после exhale hold (round-exhale)
     if (phase === 'inhale' && previousHoldType === 'round-exhale') {
       return false;
     }
-    
+
     // Не показываем счетчик на exhale после inhale hold (round-inhale или global-inhale)
-    if (phase === 'exhale' && (previousHoldType === 'round-inhale' || previousHoldType === 'global-inhale')) {
+    if (
+      phase === 'exhale' &&
+      (previousHoldType === 'round-inhale' || previousHoldType === 'global-inhale')
+    ) {
       return false;
     }
-    
+
     if (phase === 'inhale') {
       // Монтируем с 0.2, чтобы fade in завершился к 0.5
       return progress >= 0.2;
@@ -260,7 +284,7 @@ export const BreathingCircle = ({
       // Размонтируем при 0.5, когда fade out завершился
       return progress < 0.5;
     }
-    
+
     return false;
   }, [phase, isHoldPhase, isPausePhase, progress, roundCycle, previousHoldType]);
 
@@ -271,12 +295,12 @@ export const BreathingCircle = ({
     if (phase !== 'inhale' || !isRunning) {
       return false;
     }
-    
+
     // Не показываем на inhale после exhale hold (round-exhale)
     if (previousHoldType === 'round-exhale') {
       return false;
     }
-    
+
     return true;
   }, [phase, isRunning, previousHoldType]);
 
@@ -287,12 +311,12 @@ export const BreathingCircle = ({
     if (phase !== 'exhale' || !isRunning) {
       return false;
     }
-    
+
     // Не показываем на exhale после inhale hold (round-inhale или global-inhale)
     if (previousHoldType === 'round-inhale' || previousHoldType === 'global-inhale') {
       return false;
     }
-    
+
     return true;
   }, [phase, isRunning, previousHoldType]);
 
@@ -308,7 +332,7 @@ export const BreathingCircle = ({
       // Сбрасываем флаг после завершения перехода (0.8 секунды)
       const timer = setTimeout(() => {
         isFirstMintHoldEntry.current = false;
-      }, 800);  // После завершения перехода (0.8 сек)
+      }, 800); // После завершения перехода (0.8 сек)
       return () => clearTimeout(timer);
     }
   }, [isMintHold]);
@@ -322,7 +346,7 @@ export const BreathingCircle = ({
         return 'Задержка дыхания после вдоха';
       }
     }
-    
+
     const metadata = PHASE_METADATA[phase];
     return metadata?.label ?? phase;
   }, [phase, holdType]);
@@ -330,22 +354,13 @@ export const BreathingCircle = ({
   return (
     <div className={styles.container}>
       {/* Скрытый элемент для screen readers с объявлением текущей фазы */}
-      <div 
-        aria-live="polite" 
-        aria-atomic="true"
-        className={styles.visuallyHidden}
-      >
+      <div aria-live="polite" aria-atomic="true" className={styles.visuallyHidden}>
         {isRunning && `Фаза дыхания: ${phaseDescription}`}
       </div>
-      
+
       {/* Внешнее кольцо - фиксированное, служит границей максимального вдоха */}
       <div className={styles.outerRing}>
-        <svg
-          width="100%"
-          height="100%"
-          viewBox="0 0 100 100"
-          style={{ overflow: 'visible' }}
-        >
+        <svg width="100%" height="100%" viewBox="0 0 100 100" style={{ overflow: 'visible' }}>
           <circle
             cx="50"
             cy="50"
@@ -369,23 +384,23 @@ export const BreathingCircle = ({
                 filter: 'blur(8px)',
               }
             : isMintHold
-            ? {
-                // Синхронизируем glowLayer с основным кругом для mint hold
-                scale: isFirstMintHoldEntry.current
-                  ? minScale * 5  // Синхронизация с основным кругом
-                  : [minScale * 5, minScale * 5 * 1.3, minScale * 5],
-                filter: `blur(${glowEffect.blur})`,
-              }
-            : isBlueHold
-            ? {
-                // Синхронизируем glowLayer с основным кругом для задержки на вдохе
-                scale: maxScale,
-                filter: `blur(${glowEffect.blur})`,
-              }
-            : {
-                scale: activeScaleTarget,
-                filter: `blur(${glowEffect.blur})`,
-              }
+              ? {
+                  // Синхронизируем glowLayer с основным кругом для mint hold
+                  scale: isFirstMintHoldEntry.current
+                    ? minScale * 5 // Синхронизация с основным кругом
+                    : [minScale * 5, minScale * 5 * 1.3, minScale * 5],
+                  filter: `blur(${glowEffect.blur})`,
+                }
+              : isBlueHold
+                ? {
+                    // Синхронизируем glowLayer с основным кругом для задержки на вдохе
+                    scale: maxScale,
+                    filter: `blur(${glowEffect.blur})`,
+                  }
+                : {
+                    scale: activeScaleTarget,
+                    filter: `blur(${glowEffect.blur})`,
+                  }
         }
         transition={
           isIdle
@@ -395,27 +410,29 @@ export const BreathingCircle = ({
                 repeat: Infinity,
               }
             : isMintHold
-            ? {
-                // Пульсация для glowLayer (синхронизация с основным кругом)
-                duration: isFirstMintHoldEntry.current ? 0.8 : 1.5,
-                ease: 'easeInOut',
-                ...(isFirstMintHoldEntry.current ? {} : {
-                  repeat: Infinity,
-                  repeatType: 'loop',
-                }),
-              }
-            : isBlueHold
-            ? {
-                // Пульсирующее свечение для задержки на вдохе (бирюзово-лавандовое)
-                duration: 2,
-                ease: 'easeInOut',
-                repeat: Infinity,
-                repeatType: 'loop',
-              }
-            : {
-                duration: phaseDuration,
-                ease: phase === 'inhale' || phase === 'exhale' ? 'easeInOut' : 'linear',
-              }
+              ? {
+                  // Пульсация для glowLayer (синхронизация с основным кругом)
+                  duration: isFirstMintHoldEntry.current ? 0.8 : 1.5,
+                  ease: 'easeInOut',
+                  ...(isFirstMintHoldEntry.current
+                    ? {}
+                    : {
+                        repeat: Infinity,
+                        repeatType: 'loop',
+                      }),
+                }
+              : isBlueHold
+                ? {
+                    // Пульсирующее свечение для задержки на вдохе (бирюзово-лавандовое)
+                    duration: 2,
+                    ease: 'easeInOut',
+                    repeat: Infinity,
+                    repeatType: 'loop',
+                  }
+                : {
+                    duration: phaseDuration,
+                    ease: phase === 'inhale' || phase === 'exhale' ? 'easeInOut' : 'linear',
+                  }
         }
       />
 
@@ -424,7 +441,7 @@ export const BreathingCircle = ({
         className={`${styles.circle} ${isHoldPhase ? styles.holdCircle : ''}`}
         initial={
           isMintHold && isFirstMintHoldEntry.current
-            ? { scale: minScale }  // Начало с 0.15 для плавного перехода
+            ? { scale: minScale } // Начало с 0.15 для плавного перехода
             : false
         }
         animate={
@@ -436,34 +453,34 @@ export const BreathingCircle = ({
                 boxShadow: `0 0 18px ${bluePrimaryColors.medium}, 0 0 28px ${bluePrimaryColors.veryLow}`,
               }
             : isMintHold
-            ? {
-                // Мятная задержка: плавный переход от выдоха к пульсирующему кругу (только первый раз)
-                scale: isFirstMintHoldEntry.current
-                  ? minScale * 5  // Статичное значение для перехода (0.15 → 0.75 через initial)
-                  : [minScale * 5, minScale * 5 * 1.3, minScale * 5], // Пульсация
-                background: mintHoldColor,
-                boxShadow: glowEffect.boxShadow,
-              }
-            : isBlueHold
-            ? {
-                // Задержка на вдохе: заполненный круг с градиентом выдоха (бирюза → лаванда)
-                scale: maxScale,
-                background: circleStyle.background,
-                boxShadow: glowEffect.boxShadow,
-              }
-            : isPausePhase
-            ? {
-                // Легкое сердцебиение визуально показывает, что упражнение на паузе, но не завершено
-                scale: [minScale, minScale * 1.1, minScale],
-                background: circleStyle.background,
-                boxShadow: `0 0 18px ${bluePrimaryColors.medium}, 0 0 28px ${bluePrimaryColors.veryLow}`,
-              }
-            : {
-                // Обычное дыхание: inhale/exhale с вращающимся градиентом
-                scale: activeScaleTarget,
-                background: circleStyle.background,
-                boxShadow: glowEffect.boxShadow,
-              }
+              ? {
+                  // Мятная задержка: плавный переход от выдоха к пульсирующему кругу (только первый раз)
+                  scale: isFirstMintHoldEntry.current
+                    ? minScale * 5 // Статичное значение для перехода (0.15 → 0.75 через initial)
+                    : [minScale * 5, minScale * 5 * 1.3, minScale * 5], // Пульсация
+                  background: mintHoldColor,
+                  boxShadow: glowEffect.boxShadow,
+                }
+              : isBlueHold
+                ? {
+                    // Задержка на вдохе: заполненный круг с градиентом выдоха (бирюза → лаванда)
+                    scale: maxScale,
+                    background: circleStyle.background,
+                    boxShadow: glowEffect.boxShadow,
+                  }
+                : isPausePhase
+                  ? {
+                      // Легкое сердцебиение визуально показывает, что упражнение на паузе, но не завершено
+                      scale: [minScale, minScale * 1.1, minScale],
+                      background: circleStyle.background,
+                      boxShadow: `0 0 18px ${bluePrimaryColors.medium}, 0 0 28px ${bluePrimaryColors.veryLow}`,
+                    }
+                  : {
+                      // Обычное дыхание: inhale/exhale с вращающимся градиентом
+                      scale: activeScaleTarget,
+                      background: circleStyle.background,
+                      boxShadow: glowEffect.boxShadow,
+                    }
         }
         transition={
           isIdle
@@ -473,76 +490,77 @@ export const BreathingCircle = ({
                 repeat: Infinity,
               }
             : isMintHold
-            ? {
-                // Отдельные transition для scale и boxShadow для плавной пульсации без клипания
-                scale: {
-                  duration: isFirstMintHoldEntry.current ? 0.8 : 1.5,  // 0.8 сек для плавного перехода
-                  ease: 'easeInOut',
-                  // НЕТ times для первого входа (простой переход)
-                  // НЕТ repeat для первого входа (переход один раз)
-                  ...(isFirstMintHoldEntry.current ? {} : {
-                    repeat: Infinity,
-                    repeatType: 'loop',
-                  }),
-                },
-                background: {
-                  duration: 0,
-                  ease: 'linear',
-                },
-                boxShadow: {
-                  duration: 0,
-                  ease: 'linear',
-                },
-              }
-            : isBlueHold
-            ? {
-                // Плавный переход к градиенту выдоха для задержки на вдохе
-                // boxShadow анимируется отдельно через массив значений в glowEffect
-                default: {
-                  duration: 0.3,
-                  ease: 'easeInOut',
-                },
-                background: {
-                  duration: phaseDuration,
-                  ease: 'linear',
-                },
-                boxShadow: {
-                  duration: 2,
-                  ease: 'easeInOut',
-                  repeat: Infinity,
-                  repeatType: 'loop',
-                },
-              }
-            : isPausePhase
-            ? {
-                // Плавный переход фона и свечения (0.8 сек), затем пульсация scale
-                default: {
-                  duration: 0.8,
-                  ease: 'easeOut',
-                },
-                scale: {
-                  duration: 1,
-                  ease: 'easeInOut',
-                  repeat: Infinity,
-                  repeatType: 'loop',
-                },
-                background: {
-                  duration: 0.8,
-                  ease: 'easeOut',
-                },
-                boxShadow: {
-                  duration: 0.8,
-                  ease: 'easeOut',
-                },
-              }
-            : {
-                // Обычное дыхание
-                duration: phaseDuration,
-                ease: phase === 'inhale' || phase === 'exhale' ? 'easeInOut' : 'linear',
-              }
+              ? {
+                  // Отдельные transition для scale и boxShadow для плавной пульсации без клипания
+                  scale: {
+                    duration: isFirstMintHoldEntry.current ? 0.8 : 1.5, // 0.8 сек для плавного перехода
+                    ease: 'easeInOut',
+                    // НЕТ times для первого входа (простой переход)
+                    // НЕТ repeat для первого входа (переход один раз)
+                    ...(isFirstMintHoldEntry.current
+                      ? {}
+                      : {
+                          repeat: Infinity,
+                          repeatType: 'loop',
+                        }),
+                  },
+                  background: {
+                    duration: 0,
+                    ease: 'linear',
+                  },
+                  boxShadow: {
+                    duration: 0,
+                    ease: 'linear',
+                  },
+                }
+              : isBlueHold
+                ? {
+                    // Плавный переход к градиенту выдоха для задержки на вдохе
+                    // boxShadow анимируется отдельно через массив значений в glowEffect
+                    default: {
+                      duration: 0.3,
+                      ease: 'easeInOut',
+                    },
+                    background: {
+                      duration: phaseDuration,
+                      ease: 'linear',
+                    },
+                    boxShadow: {
+                      duration: 2,
+                      ease: 'easeInOut',
+                      repeat: Infinity,
+                      repeatType: 'loop',
+                    },
+                  }
+                : isPausePhase
+                  ? {
+                      // Плавный переход фона и свечения (0.8 сек), затем пульсация scale
+                      default: {
+                        duration: 0.8,
+                        ease: 'easeOut',
+                      },
+                      scale: {
+                        duration: 1,
+                        ease: 'easeInOut',
+                        repeat: Infinity,
+                        repeatType: 'loop',
+                      },
+                      background: {
+                        duration: 0.8,
+                        ease: 'easeOut',
+                      },
+                      boxShadow: {
+                        duration: 0.8,
+                        ease: 'easeOut',
+                      },
+                    }
+                  : {
+                      // Обычное дыхание
+                      duration: phaseDuration,
+                      ease: phase === 'inhale' || phase === 'exhale' ? 'easeInOut' : 'linear',
+                    }
         }
-      >
-      </motion.div>
+      ></motion.div>
 
       {/* Надпись "Задержка" - только для финальной задержки без типа (старая логика без раундов) */}
       {phase === 'hold' && isFinalHold && !holdType && (
@@ -560,9 +578,9 @@ export const BreathingCircle = ({
       {/* Счетчик цикла - позиционирован относительно контейнера, а не масштабируемого круга */}
       <AnimatePresence>
         {shouldShowCycleCounter && (
-          <CycleCounter 
+          <CycleCounter
             key={`cycle-${roundCycle ?? currentCycle ?? 1}`}
-            cycle={roundCycle ?? currentCycle ?? 1} 
+            cycle={roundCycle ?? currentCycle ?? 1}
             phase={phase}
             progress={progress}
             animationDuration={phaseDuration / 2}
@@ -571,17 +589,11 @@ export const BreathingCircle = ({
       </AnimatePresence>
 
       {/* Иконка песочных часов - строго в центре */}
-      <AnimatePresence>
-        {isHoldPhase && (
-          <HoldHourglass key="hold-hourglass" />
-        )}
-      </AnimatePresence>
+      <AnimatePresence>{isHoldPhase && <HoldHourglass key="hold-hourglass" />}</AnimatePresence>
 
       {/* Обратный отсчет - под иконкой */}
       <AnimatePresence>
-        {isHoldPhase && (
-          <HoldTimer key="hold-timer" timeRemaining={timeRemaining} />
-        )}
+        {isHoldPhase && <HoldTimer key="hold-timer" timeRemaining={timeRemaining} />}
       </AnimatePresence>
 
       {/* Подсказки "Вдох" и "Выдох" - синхронизированный переход */}

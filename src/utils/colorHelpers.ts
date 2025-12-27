@@ -9,24 +9,24 @@ export const getColorRgb = (cssVariable: string): string => {
     // SSR: возвращаем fallback значение, которое должно совпадать с --color-fallback-rgb
     return '33, 150, 243';
   }
-  
+
   try {
     const root = document.documentElement;
     const rgbValue = getComputedStyle(root).getPropertyValue(cssVariable).trim();
-    
+
     if (!rgbValue) {
       // Если переменная не найдена, используем fallback из CSS переменной
       const fallbackRgb = getComputedStyle(root).getPropertyValue('--color-fallback-rgb').trim();
-      
+
       if (process.env.NODE_ENV === 'development') {
         console.warn(
           `[colorHelpers] CSS переменная "${cssVariable}" не найдена. Используется fallback.`
         );
       }
-      
+
       return fallbackRgb || '33, 150, 243';
     }
-    
+
     return rgbValue;
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
@@ -43,10 +43,7 @@ export const getColorRgb = (cssVariable: string): string => {
  * @param alpha - значение прозрачности (0-1)
  * @returns rgba строка (например, "rgba(33, 150, 243, 0.6)")
  */
-export const getRgbaFromVariable = (
-  cssVariable: string,
-  alpha: number
-): string => {
+export const getRgbaFromVariable = (cssVariable: string, alpha: number): string => {
   const rgb = getColorRgb(cssVariable);
   return `rgba(${rgb}, ${alpha})`;
 };

@@ -48,7 +48,7 @@
 }
 
 /* Адаптация для десктоп версии */
-[data-device="desktop"] .practices {
+[data-device='desktop'] .practices {
   margin-top: clamp(var(--spacing-sm), 4vh, var(--spacing-lg));
   padding: var(--spacing-xs) 0 clamp(var(--spacing-xs), 1vh, var(--spacing-sm));
 }
@@ -71,7 +71,7 @@
 }
 
 /* Адаптация высоты карточки для десктоп */
-[data-device="desktop"] .flipCard {
+[data-device='desktop'] .flipCard {
   min-height: clamp(300px, calc(50vh * var(--tg-scale-factor) * var(--tg-desktop-scale)), 450px);
   max-height: calc(var(--desktop-content-max-height) - 200px);
 }
@@ -96,16 +96,16 @@
   box-shadow: 
     /* Основная тень - большая и размытая */
     0 20px 60px rgba(0, 0, 0, 0.4),
-    /* Вторичная тень - для дополнительной глубины */
-    0 10px 30px rgba(0, 0, 0, 0.3),
-    /* Внутренняя тень для объёма */
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Вторичная тень - для дополнительной глубины */ 0 10px 30px rgba(0, 0, 0, 0.3),
+    /* Внутренняя тень для объёма */ inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 /* Адаптация карточек для десктоп */
-[data-device="desktop"] .cardFront,
-[data-device="desktop"] .cardBack {
+[data-device='desktop'] .cardFront,
+[data-device='desktop'] .cardBack {
   min-height: clamp(300px, calc(50vh * var(--tg-scale-factor) * var(--tg-desktop-scale)), 450px);
   max-height: calc(var(--desktop-content-max-height) - 200px);
 }
@@ -174,7 +174,7 @@
   margin: 0;
   text-align: center;
   letter-spacing: 0.05em;
-  text-shadow: 
+  text-shadow:
     0 2px 8px rgba(0, 0, 0, 0.8),
     0 0 4px rgba(0, 0, 0, 0.6),
     0 1px 2px rgba(0, 0, 0, 0.9);
@@ -188,7 +188,7 @@
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   border-radius: var(--radius-md);
-  box-shadow: 
+  box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   z-index: 2;
@@ -205,7 +205,7 @@
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   border-radius: var(--radius-md);
-  box-shadow: 
+  box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   z-index: 2;
@@ -232,7 +232,7 @@
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   border-radius: var(--radius-md);
-  box-shadow: 
+  box-shadow:
     0 8px 24px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
   z-index: 2;
@@ -254,7 +254,7 @@
   margin: 0;
   text-align: left;
   flex: 1;
-  text-shadow: 
+  text-shadow:
     0 2px 8px rgba(0, 0, 0, 0.8),
     0 0 4px rgba(0, 0, 0, 0.6),
     0 1px 2px rgba(0, 0, 0, 0.9);
@@ -293,12 +293,9 @@
   box-shadow: 
     /* Основная тень - усиленная */
     0 25px 70px rgba(0, 0, 0, 0.5),
-    /* Вторичная тень - усиленная */
-    0 15px 40px rgba(0, 0, 0, 0.4),
-    /* Внутренняя тень - усиленная */
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    /* Акцентная тень от кораллового цвета */
-    0 8px 32px rgba(var(--color-coral-primary-rgb), 0.2);
+    /* Вторичная тень - усиленная */ 0 15px 40px rgba(0, 0, 0, 0.4),
+    /* Внутренняя тень - усиленная */ inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    /* Акцентная тень от кораллового цвета */ 0 8px 32px rgba(var(--color-coral-primary-rgb), 0.2);
 }
 
 .imageWrapper {
@@ -313,7 +310,7 @@
 }
 
 /* Адаптация размера изображения для десктоп */
-[data-device="desktop"] .imageWrapper {
+[data-device='desktop'] .imageWrapper {
   height: clamp(150px, 30vh, 250px);
 }
 
@@ -324,7 +321,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(180deg, rgba(var(--color-blue-primary-rgb), 0.3) 0%, rgba(var(--color-turquoise-primary-rgb), 0.2) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(var(--color-blue-primary-rgb), 0.3) 0%,
+    rgba(var(--color-turquoise-primary-rgb), 0.2) 100%
+  );
   pointer-events: none;
   z-index: 1;
 }
@@ -404,7 +405,6 @@
   z-index: 2;
 }
 
-
 /* Кнопка "Подышать" */
 .breatheButton {
   width: 100%;
@@ -417,7 +417,7 @@
   font-weight: 500;
   color: var(--color-text-white);
   cursor: pointer;
-  box-shadow: 
+  box-shadow:
     0 4px 20px rgba(var(--color-coral-primary-rgb), 0.3),
     0 2px 10px rgba(0, 0, 0, 0.2);
   transition: box-shadow 0.3s ease;
@@ -428,13 +428,13 @@
 }
 
 .breatheButton:hover {
-  box-shadow: 
+  box-shadow:
     0 6px 30px rgba(var(--color-coral-primary-rgb), 0.4),
     0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .breatheButton:active {
-  box-shadow: 
+  box-shadow:
     0 2px 10px rgba(var(--color-coral-primary-rgb), 0.3),
     0 1px 5px rgba(0, 0, 0, 0.2);
 }

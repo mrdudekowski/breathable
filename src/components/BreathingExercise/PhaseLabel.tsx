@@ -8,18 +8,14 @@ interface PhaseLabelProps {
   phase: BreathingPhase;
 }
 
-export const PhaseLabel = ({
-  text,
-  position,
-  phase: _phase,
-}: PhaseLabelProps) => {
+export const PhaseLabel = ({ text, position, phase: _phase }: PhaseLabelProps) => {
   const positionClass = styles[position];
 
   return (
     <motion.div
       className={`${styles.label} ${positionClass}`}
       initial={{ opacity: 0 }}
-      animate={{ 
+      animate={{
         opacity: 1,
         transition: {
           opacity: {
@@ -29,7 +25,7 @@ export const PhaseLabel = ({
           },
         },
       }}
-      exit={{ 
+      exit={{
         opacity: 0,
         transition: {
           opacity: {
@@ -44,4 +40,3 @@ export const PhaseLabel = ({
     </motion.div>
   );
 };
-

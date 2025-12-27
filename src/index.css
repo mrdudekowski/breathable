@@ -4,10 +4,10 @@
   --tg-viewport-stable-height: 100vh; /* Fallback для браузеров без Telegram */
   --tg-scale-factor: 1; /* Базовое значение, обновляется через JS на основе viewport */
   --tg-desktop-scale: 1; /* Дополнительный масштаб для десктоп версии */
-  
+
   /* ===== DESKTOP SCALING ===== */
   --desktop-content-max-height: 95vh; /* Максимальная высота контента на десктоп */
-  
+
   /* ===== SAFE AREA INSETS - для устройств с вырезами (notch, Dynamic Island) ===== */
   --tg-safe-area-top: env(safe-area-inset-top, 0px);
   --tg-safe-area-right: env(safe-area-inset-right, 0px);
@@ -18,36 +18,36 @@
   --safe-area-inset-right: var(--tg-safe-area-right);
   --safe-area-inset-bottom: var(--tg-safe-area-bottom);
   --safe-area-inset-left: var(--tg-safe-area-left);
-  
+
   /* ===== ОСНОВНАЯ ПАЛИТРА: АНАЛОГОВАЯ СХЕМА ===== */
-  
+
   /* Синий спектр (70% - доминирующий) */
-  --color-blue-deep: #1565C0;
-  --color-blue-primary: #2196F3;
-  --color-blue-light: #64B5F6;
-  --color-blue-sky: #90CAF9;
-  
+  --color-blue-deep: #1565c0;
+  --color-blue-primary: #2196f3;
+  --color-blue-light: #64b5f6;
+  --color-blue-sky: #90caf9;
+
   /* Лавандовый спектр (20% - вторичный) */
-  --color-lavender-deep: #7E57C2;
-  --color-lavender-primary: #9575CD;
-  --color-lavender-light: #B39DDB;
-  --color-lavender-pale: #D1C4E9;
-  
+  --color-lavender-deep: #7e57c2;
+  --color-lavender-primary: #9575cd;
+  --color-lavender-light: #b39ddb;
+  --color-lavender-pale: #d1c4e9;
+
   /* Бирюзовый спектр (10% - динамика) */
-  --color-turquoise-deep: #00897B;
-  --color-turquoise-primary: #26A69A;
-  --color-turquoise-light: #4DB6AC;
-  --color-turquoise-pale: #80CBC4;
-  
+  --color-turquoise-deep: #00897b;
+  --color-turquoise-primary: #26a69a;
+  --color-turquoise-light: #4db6ac;
+  --color-turquoise-pale: #80cbc4;
+
   /* Коралловый (тёплый акцент) */
-  --color-coral-deep: #FF7043;
-  --color-coral-primary: #FF8A65;
-  --color-coral-light: #FFAB91;
-  
+  --color-coral-deep: #ff7043;
+  --color-coral-primary: #ff8a65;
+  --color-coral-light: #ffab91;
+
   /* Мятный (для задержек) */
-  --color-mint-primary: #4DB6AC;
-  --color-mint-light: #80CBC4;
-  
+  --color-mint-primary: #4db6ac;
+  --color-mint-light: #80cbc4;
+
   /* ===== RGB ПЕРЕМЕННЫЕ ДЛЯ RGBA() ===== */
   --color-blue-primary-rgb: 33, 150, 243;
   --color-blue-deep-rgb: 21, 101, 192;
@@ -61,10 +61,10 @@
   --color-mint-primary-rgb: 77, 182, 172;
   --color-text-cream-rgb: 245, 245, 220;
   --color-bg-secondary-rgb: 22, 33, 62;
-  
+
   /* Fallback RGB для случаев, когда CSS переменная недоступна (SSR, ошибки) */
   --color-fallback-rgb: 33, 150, 243;
-  
+
   /* ===== АЛИАСЫ ДЛЯ ОБРАТНОЙ СОВМЕСТИМОСТИ ===== */
   --color-accent-orange: var(--color-coral-primary);
   --color-accent-amber: #f7931e; /* Сохранить для мета-информации */
@@ -72,16 +72,16 @@
   --color-accent-secondary: var(--color-lavender-primary);
   --color-accent-dynamic: var(--color-turquoise-primary);
   --color-accent-warm: var(--color-coral-primary);
-  
+
   /* ===== ФОНОВЫЕ ЦВЕТА ===== */
   --color-bg-primary: #1a1a2e;
   --color-bg-secondary: #16213e;
-  
+
   /* ===== ТЕКСТОВЫЕ ЦВЕТА ===== */
   --color-text-cream: #f5f5dc;
   --color-text-beige: #fff8e7;
-  --color-text-white: #FFFFFF;
-  
+  --color-text-white: #ffffff;
+
   /* ===== ГРАДИЕНТЫ КРУГА ДЫХАНИЯ (ВРАЩАЮЩИЕСЯ) ===== */
   --circle-gradient-start: var(--color-blue-primary);
   --circle-gradient-middle: var(--color-turquoise-primary);
@@ -90,10 +90,10 @@
   --circle-gradient-inhale-end: var(--color-turquoise-primary);
   --circle-gradient-exhale-start: var(--color-turquoise-primary);
   --circle-gradient-exhale-end: var(--color-lavender-primary);
-  
+
   /* ===== ФОНОВЫЕ ГРАДИЕНТЫ ===== */
   --bg-gradient-subtle: linear-gradient(180deg, #1a1a2e 0%, #1e3a5f 100%);
-  
+
   /* ===== TELEGRAM THEME COLORS ===== */
   --tg-theme-bg-color: var(--color-bg-primary);
   --tg-theme-text-color: var(--color-text-cream);
@@ -126,16 +126,16 @@
   --circle-base-size: clamp(50px, calc(9vw * var(--tg-scale-factor)), 70px);
   --circle-expanded-size: clamp(200px, calc(35vw * var(--tg-scale-factor)), 280px);
   --circle-size: var(--circle-base-size);
-  
+
   /* Circle Glow Effects */
   --circle-glow-intensity-base: 0.4;
   --circle-glow-intensity-pulse: 0.9;
   --circle-glow-blur-base: 20px;
   --circle-glow-blur-expanded: 60px;
   --circle-glow-blur-pulse: 80px;
-  
+
   /* Circle Gradient - теперь используется из основной палитры выше */
-  
+
   /* Button Sizes - Single Source of Truth (with scale factor) */
   --button-height: clamp(2.2rem, calc(5.5vh * var(--tg-scale-factor)), 3rem);
   --button-padding-x: clamp(1.2rem, calc(3.5vw * var(--tg-scale-factor)), 2rem);
@@ -179,15 +179,24 @@ body {
   height: 100%;
   overflow: hidden;
   /* Учитываем safe areas для полноэкранного режима на устройствах с вырезами */
-  padding: env(safe-area-inset-top, 0px) 
-           env(safe-area-inset-right, 0px) 
-           env(safe-area-inset-bottom, 0px) 
-           env(safe-area-inset-left, 0px);
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+    env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
 }
 
 body {
-  font-family: 'Ysabeau SC', serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family:
+    'Ysabeau SC',
+    serif,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

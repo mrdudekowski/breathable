@@ -20,6 +20,6 @@
 }
 
 /* Для десктоп - центрирование контента */
-[data-device="desktop"] .layout {
+[data-device='desktop'] .layout {
   justify-content: center;
 }

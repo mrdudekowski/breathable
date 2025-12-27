@@ -2,11 +2,11 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 20;
   width: fit-content;
   height: fit-content;
+  transform-origin: center center;
 }
 
 .iconWrapper {
@@ -21,4 +21,3 @@
   width: clamp(16px, 3vw, 24px);
   height: clamp(16px, 3vw, 24px);
 }
-

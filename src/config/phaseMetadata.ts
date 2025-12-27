@@ -23,4 +23,3 @@ export const PHASE_METADATA: Record<BreathingPhase, PhaseMetadata> = {
     shortLabel: 'Пауза',
   },
 };
-

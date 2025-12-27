@@ -44,14 +44,13 @@
   .label {
     font-size: clamp(1rem, 3.5vw, 1.5rem);
   }
-  
+
   /* Формула позиционирования остается той же для консистентности на всех устройствах */
   .left {
     left: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2);
   }
-  
+
   .right {
     right: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2);
   }
 }
-

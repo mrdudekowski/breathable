@@ -36,7 +36,7 @@ interface SafeAreaInsets {
 
 /**
  * Type guard для проверки, является ли значение экземпляром TelegramWebApp.
- * 
+ *
  * @param value - Значение для проверки
  * @returns true, если value является TelegramWebApp
  */
@@ -61,7 +61,7 @@ const isSafeAreaInsets = (value: unknown): value is SafeAreaInsets => {
   if (typeof value !== 'object' || value === null) return false;
   const candidate = value as Record<string, unknown>;
   const keys = ['top', 'bottom', 'left', 'right'];
-  return keys.some((key) => typeof candidate[key] === 'number');
+  return keys.some(key => typeof candidate[key] === 'number');
 };
 
 /**
@@ -82,22 +82,22 @@ export const useTelegramWebApp = () => {
 
     const applyFallbackViewport = () => {
       if (typeof window === 'undefined') return;
-      
+
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
       const isDesktopView = isDesktop(viewportWidth);
-      
+
       document.documentElement.style.setProperty(
         '--tg-viewport-stable-height',
         `${viewportHeight}px`
       );
-      
+
       // Рассчитываем scale factor в зависимости от типа устройства
       let scaleFactor: number;
       if (isDesktopView) {
         scaleFactor = calculateDesktopScaleFactor(viewportHeight, viewportWidth);
         document.documentElement.setAttribute('data-device', 'desktop');
-        
+
         // Дополнительный масштаб для десктоп
         const additionalScale = calculateDesktopAdditionalScale(
           viewportHeight,
@@ -112,11 +112,8 @@ export const useTelegramWebApp = () => {
         document.documentElement.setAttribute('data-device', 'mobile');
         document.documentElement.style.setProperty('--tg-desktop-scale', '1');
       }
-      
-      document.documentElement.style.setProperty(
-        '--tg-scale-factor',
-        scaleFactor.toString()
-      );
+
+      document.documentElement.style.setProperty('--tg-scale-factor', scaleFactor.toString());
     };
 
     const initTelegramWebApp = async () => {
@@ -128,7 +125,7 @@ export const useTelegramWebApp = () => {
               WebApp?: unknown;
             };
           };
-          
+
           if (windowWithTelegram.Telegram?.WebApp != null) {
             const webAppCandidate = windowWithTelegram.Telegram.WebApp;
             if (isTelegramWebApp(webAppCandidate)) {
@@ -147,7 +144,9 @@ export const useTelegramWebApp = () => {
             }
             // Проверяем наличие методов SDK (могут отсутствовать в некоторых версиях)
             if ('bindViewportCssVars' in sdk && typeof sdk.bindViewportCssVars === 'function') {
-              bindViewportCssVars = sdk.bindViewportCssVars as (formatter?: (key: string) => string) => unknown;
+              bindViewportCssVars = sdk.bindViewportCssVars as (
+                formatter?: (key: string) => string
+              ) => unknown;
             }
             if ('requestViewport' in sdk && typeof sdk.requestViewport === 'function') {
               requestViewportData = sdk.requestViewport as () => Promise<unknown>;
@@ -172,19 +171,34 @@ export const useTelegramWebApp = () => {
               document.documentElement.style.setProperty('--tg-theme-bg-color', params.bg_color);
             }
             if (params?.text_color != null && params.text_color !== '') {
-              document.documentElement.style.setProperty('--tg-theme-text-color', params.text_color);
+              document.documentElement.style.setProperty(
+                '--tg-theme-text-color',
+                params.text_color
+              );
             }
             if (params?.hint_color != null && params.hint_color !== '') {
-              document.documentElement.style.setProperty('--tg-theme-hint-color', params.hint_color);
+              document.documentElement.style.setProperty(
+                '--tg-theme-hint-color',
+                params.hint_color
+              );
             }
             if (params?.link_color != null && params.link_color !== '') {
-              document.documentElement.style.setProperty('--tg-theme-link-color', params.link_color);
+              document.documentElement.style.setProperty(
+                '--tg-theme-link-color',
+                params.link_color
+              );
             }
             if (params?.button_color != null && params.button_color !== '') {
-              document.documentElement.style.setProperty('--tg-theme-button-color', params.button_color);
+              document.documentElement.style.setProperty(
+                '--tg-theme-button-color',
+                params.button_color
+              );
             }
             if (params?.button_text_color != null && params.button_text_color !== '') {
-              document.documentElement.style.setProperty('--tg-theme-button-text-color', params.button_text_color);
+              document.documentElement.style.setProperty(
+                '--tg-theme-button-text-color',
+                params.button_text_color
+              );
             }
           };
           applyTheme(themeParams);
@@ -192,9 +206,12 @@ export const useTelegramWebApp = () => {
           // Связываем CSS переменные через SDK, если доступно
           if (bindViewportCssVars && typeof bindViewportCssVars === 'function') {
             try {
-              bindViewportCssVars((key) => `--tg-viewport-${key}`);
+              bindViewportCssVars(key => `--tg-viewport-${key}`);
             } catch (bindError) {
-              console.warn('bindViewportCssVars failed, fallback to manual viewport binding', bindError);
+              console.warn(
+                'bindViewportCssVars failed, fallback to manual viewport binding',
+                bindError
+              );
             }
           }
 
@@ -204,13 +221,19 @@ export const useTelegramWebApp = () => {
               document.documentElement.style.setProperty('--tg-safe-area-top', `${insets.top}px`);
             }
             if (typeof insets.bottom === 'number') {
-              document.documentElement.style.setProperty('--tg-safe-area-bottom', `${insets.bottom}px`);
+              document.documentElement.style.setProperty(
+                '--tg-safe-area-bottom',
+                `${insets.bottom}px`
+              );
             }
             if (typeof insets.left === 'number') {
               document.documentElement.style.setProperty('--tg-safe-area-left', `${insets.left}px`);
             }
             if (typeof insets.right === 'number') {
-              document.documentElement.style.setProperty('--tg-safe-area-right', `${insets.right}px`);
+              document.documentElement.style.setProperty(
+                '--tg-safe-area-right',
+                `${insets.right}px`
+              );
             }
           };
 
@@ -221,12 +244,13 @@ export const useTelegramWebApp = () => {
           // Обработка viewport для корректного масштабирования
           updateViewport = () => {
             if (!WebApp && typeof window === 'undefined') return;
-            
+
             const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 0;
-            const viewportHeight = WebApp?.viewportStableHeight ?? 
+            const viewportHeight =
+              WebApp?.viewportStableHeight ??
               (typeof window !== 'undefined' ? window.innerHeight : 0);
             const isDesktopView = isDesktop(viewportWidth);
-            
+
             // Устанавливаем viewport height
             if (WebApp?.viewportHeight !== undefined) {
               document.documentElement.style.setProperty(
@@ -234,7 +258,7 @@ export const useTelegramWebApp = () => {
                 `${WebApp.viewportHeight}px`
               );
             }
-            
+
             if (WebApp?.viewportStableHeight !== undefined) {
               document.documentElement.style.setProperty(
                 '--tg-viewport-stable-height',
@@ -246,13 +270,13 @@ export const useTelegramWebApp = () => {
                 `${viewportHeight}px`
               );
             }
-            
+
             // Рассчитываем scale factor в зависимости от типа устройства
             let scaleFactor: number;
             if (isDesktopView) {
               scaleFactor = calculateDesktopScaleFactor(viewportHeight, viewportWidth);
               document.documentElement.setAttribute('data-device', 'desktop');
-              
+
               // Дополнительный масштаб для десктоп (для финальной корректировки)
               const additionalScale = calculateDesktopAdditionalScale(
                 viewportHeight,
@@ -267,16 +291,13 @@ export const useTelegramWebApp = () => {
               document.documentElement.setAttribute('data-device', 'mobile');
               document.documentElement.style.setProperty('--tg-desktop-scale', '1');
             }
-            
-            document.documentElement.style.setProperty(
-              '--tg-scale-factor',
-              scaleFactor.toString()
-            );
+
+            document.documentElement.style.setProperty('--tg-scale-factor', scaleFactor.toString());
           };
 
           // Устанавливаем viewport при инициализации
           updateViewport();
-          
+
           // Подписываемся на изменения размера окна для десктоп версии
           if (typeof window !== 'undefined' && updateViewport != null) {
             resizeHandler = () => {

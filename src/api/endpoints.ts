@@ -42,4 +42,5 @@ export const getUserStats = async (): Promise<GetUserStatsResponse> => {
   });
 };
 
-export const API_BASE_URL: string = (import.meta.env.VITE_API_BASE_URL as string) || 'https://api.example.com';
+export const API_BASE_URL: string =
+  (import.meta.env.VITE_API_BASE_URL as string) || 'https://api.example.com';

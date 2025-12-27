@@ -21,12 +21,7 @@ export const HourglassIcon = ({ className, size = 24 }: HourglassIconProps) => {
         strokeLinejoin="round"
         fill="none"
       />
-      <path
-        d="M12 12V10"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+      <path d="M12 12V10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 };

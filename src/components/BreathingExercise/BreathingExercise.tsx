@@ -6,7 +6,11 @@ import { SpeedToggle } from './SpeedToggle';
 import { PauseTimer } from './PauseTimer';
 import { useBreathingExercise } from '../../hooks/useBreathingExercise';
 import type { BreathingPracticeConfig, BreathSpeedId } from '../../types/breathing';
-import { getPhaseDurationWithSpeed, getSpecialPhaseDuration, isFinalHold as checkIsFinalHold } from '../../utils/breathingHelpers';
+import {
+  getPhaseDurationWithSpeed,
+  getSpecialPhaseDuration,
+  isFinalHold as checkIsFinalHold,
+} from '../../utils/breathingHelpers';
 import styles from './BreathingExercise.module.css';
 
 interface BreathingExerciseProps {
@@ -15,7 +19,7 @@ interface BreathingExerciseProps {
 }
 
 // Единая state machine для управления UI переходами
-type UIState = 
+type UIState =
   | { type: 'idle' }
   | { type: 'showing-notification'; roundIndex: number; notificationDuration: number }
   | { type: 'counting-down'; secondsRemaining: number }
@@ -23,15 +27,17 @@ type UIState =
 
 export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) => {
   const [cyclesOverride, setCyclesOverride] = useState<number>(30);
-  const [selectedSpeedId, setSelectedSpeedId] = useState<BreathSpeedId>(practice.defaultSpeedId || 'ice-man');
-  
+  const [selectedSpeedId, setSelectedSpeedId] = useState<BreathSpeedId>(
+    practice.defaultSpeedId || 'ice-man'
+  );
+
   // Единое состояние UI
   const [uiState, setUIState] = useState<UIState>({ type: 'idle' });
-  
+
   // Отслеживаем предыдущую фазу для определения перехода в 'pause'
   const previousPhaseRef = useRef<string | undefined>(undefined);
   const prevIsRunningRef = useRef(false);
-  
+
   // Единый таймер для переходов UI
   const transitionTimerRef = useRef<number | null>(null);
 
@@ -41,7 +47,7 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
     return practice.rounds
       ? {
           ...practice,
-          rounds: practice.rounds.map((round) => ({
+          rounds: practice.rounds.map(round => ({
             ...round,
             cycles: cyclesOverride,
             breathSpeedId: selectedSpeedId, // Применяем выбранную скорость ко всем раундам
@@ -50,26 +56,20 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
       : practice;
   }, [practice, cyclesOverride, selectedSpeedId]);
 
-  const {
-    state,
-    startExercise,
-    pauseExercise,
-    resumeExercise,
-    stopExercise,
-    resetExercise,
-  } = useBreathingExercise({
-    practice: modifiedPractice,
-    callbacks: {
-      onComplete: () => {
-        setTimeout(() => {
-          onBack();
-        }, 2000);
+  const { state, startExercise, pauseExercise, resumeExercise, stopExercise, resetExercise } =
+    useBreathingExercise({
+      practice: modifiedPractice,
+      callbacks: {
+        onComplete: () => {
+          setTimeout(() => {
+            onBack();
+          }, 2000);
+        },
+        onPhaseChange: _phase => {
+          // Логика скрытия уведомления перенесена в useEffect для избежания race condition
+        },
       },
-      onPhaseChange: (_phase) => {
-        // Логика скрытия уведомления перенесена в useEffect для избежания race condition
-      },
-    },
-  });
+    });
 
   useEffect(() => {
     return () => {
@@ -101,7 +101,7 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
   // Refs для функций, чтобы избежать их включения в зависимости useEffect
   const startExerciseRef = useRef(startExercise);
   const resumeExerciseRef = useRef(resumeExercise);
-  
+
   useEffect(() => {
     startExerciseRef.current = startExercise;
     resumeExerciseRef.current = resumeExercise;
@@ -122,12 +122,12 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
           setUIState({ type: 'counting-down', secondsRemaining: 3 });
         }, uiState.notificationDuration);
         break;
-        
+
       case 'counting-down':
         if (uiState.secondsRemaining <= 0) {
           // Countdown завершён, запускаем упражнение
           setUIState({ type: 'exercising' });
-          
+
           // Запускаем или возобновляем упражнение
           if (!state.isRunning) {
             startExerciseRef.current(false); // Начинаем сразу с inhale
@@ -137,9 +137,9 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
         } else {
           // Уменьшаем счётчик через 1 секунду
           transitionTimerRef.current = window.setTimeout(() => {
-            setUIState({ 
-              type: 'counting-down', 
-              secondsRemaining: uiState.secondsRemaining - 1 
+            setUIState({
+              type: 'counting-down',
+              secondsRemaining: uiState.secondsRemaining - 1,
             });
           }, 1000);
         }
@@ -157,8 +157,8 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
   // Обработка перехода между раундами (для раундов 2, 3 и т.д.)
   useEffect(() => {
     // Определяем переход в фазу 'pause' между раундами
-    const isEnteringPause = 
-      state.currentPhase === 'pause' && 
+    const isEnteringPause =
+      state.currentPhase === 'pause' &&
       previousPhaseRef.current !== 'pause' &&
       state.currentRoundIndex !== undefined &&
       state.totalRounds !== undefined &&
@@ -167,24 +167,34 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
       uiState.type === 'exercising';
 
     // Показываем уведомление, если есть следующий раунд (не последний)
-    if (isEnteringPause && 
-        state.currentRoundIndex !== undefined && 
-        state.totalRounds !== undefined &&
-        state.currentRoundIndex < state.totalRounds) {
+    if (
+      isEnteringPause &&
+      state.currentRoundIndex !== undefined &&
+      state.totalRounds !== undefined &&
+      state.currentRoundIndex < state.totalRounds
+    ) {
       // Останавливаем основной таймер во время показа уведомления
       pauseExercise();
-      
+
       // Показываем уведомление о следующем раунде
-      setUIState({ 
-        type: 'showing-notification', 
+      setUIState({
+        type: 'showing-notification',
         roundIndex: state.currentRoundIndex + 1,
-        notificationDuration: 2000
+        notificationDuration: 2000,
       });
     }
 
     // Обновляем предыдущую фазу
     previousPhaseRef.current = state.currentPhase;
-  }, [state.currentPhase, state.currentRoundIndex, state.totalRounds, state.isRunning, state.isPaused, uiState.type, pauseExercise]);
+  }, [
+    state.currentPhase,
+    state.currentRoundIndex,
+    state.totalRounds,
+    state.isRunning,
+    state.isPaused,
+    uiState.type,
+    pauseExercise,
+  ]);
 
   const handleTogglePause = () => {
     if (state.isPaused) {
@@ -200,10 +210,10 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
       clearTimeout(transitionTimerRef.current);
       transitionTimerRef.current = null;
     }
-    
+
     // Сбрасываем состояние
     setUIState({ type: 'idle' });
-    
+
     stopExercise();
     resetExercise();
     onBack();
@@ -214,13 +224,13 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
     if (state.isRunning || uiState.type !== 'idle') {
       return;
     }
-    
+
     if (practice.rounds && practice.rounds.length > 0) {
       // Показываем уведомление о первом раунде
-      setUIState({ 
-        type: 'showing-notification', 
+      setUIState({
+        type: 'showing-notification',
         roundIndex: 1,
-        notificationDuration: 2000
+        notificationDuration: 2000,
       });
     } else {
       // Старая логика без раундов - сразу запускаем
@@ -231,22 +241,19 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
 
   // Определяем, является ли текущая задержка финальной (с учётом раундов)
   const isFinalHold = checkIsFinalHold(state, practice);
-  
+
   // Получаем текущий раунд для синхронизации анимации со скоростью дыхания
-  const currentRound = modifiedPractice.rounds?.find(
-    (r) => r.index === state.currentRoundIndex
-  );
-  
+  const currentRound = modifiedPractice.rounds?.find(r => r.index === state.currentRoundIndex);
+
   // Определяем, является ли текущая фаза специальной переходной фазой
   // Специальные переходные фазы: вдох после зелёной задержки, выдох после синей задержки
-  const isSpecialInhaleAfterGreenHold = 
-    state.currentPhase === 'inhale' && 
-    state.previousHoldType === 'round-exhale';
-    
-  const isSpecialExhaleAfterBlueHold = 
-    state.currentPhase === 'exhale' && 
+  const isSpecialInhaleAfterGreenHold =
+    state.currentPhase === 'inhale' && state.previousHoldType === 'round-exhale';
+
+  const isSpecialExhaleAfterBlueHold =
+    state.currentPhase === 'exhale' &&
     (state.previousHoldType === 'global-inhale' || state.previousHoldType === 'round-inhale');
-  
+
   // Вычисляем базовую длительность фазы с учётом скорости дыхания из раунда
   // Это обеспечивает синхронизацию анимации круга с темпом дыхания
   let phaseDuration = getPhaseDurationWithSpeed(
@@ -255,7 +262,7 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
     currentRound,
     isFinalHold
   );
-  
+
   // Применяем специальную длительность для переходных фаз
   // Ice Man: в 2 раза дольше, Space Man: остаётся такой же
   if (isSpecialInhaleAfterGreenHold || isSpecialExhaleAfterBlueHold) {
@@ -273,8 +280,8 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <button 
-        className={styles.backButton} 
+      <button
+        className={styles.backButton}
         onClick={handleStop}
         type="button"
         aria-label="Вернуться в главное меню и остановить упражнение"
@@ -296,7 +303,7 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
             min="1"
             max="30"
             value={cyclesOverride}
-            onChange={(e) => setCyclesOverride(Number(e.target.value))}
+            onChange={e => setCyclesOverride(Number(e.target.value))}
             className={styles.cyclesSlider}
             disabled={state.isRunning}
             aria-label="Количество циклов дыхания"
@@ -306,15 +313,15 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
             aria-valuenow={cyclesOverride}
           />
         </div>
-        
+
         <h1 className={styles.practiceName}>{practice.name}</h1>
-        
+
         <SpeedToggle
           selectedSpeedId={selectedSpeedId}
           onSpeedChange={setSelectedSpeedId}
           disabled={state.isRunning}
         />
-        
+
         <div className={styles.circleWrapper}>
           <BreathingCircle
             phase={state.currentPhase}
@@ -329,7 +336,7 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
             isRunning={state.isRunning}
           />
         </div>
-        
+
         <motion.div
           className={styles.timersAndNotificationsContainer}
           initial={false}
@@ -345,12 +352,12 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
                 totalRounds={state.totalRounds ?? practice.rounds?.length ?? 1}
               />
             )}
-            
+
             {/* Обратный отсчет перед раундом */}
             {uiState.type === 'counting-down' && (
-              <PauseTimer 
+              <PauseTimer
                 key={`countdown-${state.currentRoundIndex ?? 'initial'}`}
-                timeRemaining={uiState.secondsRemaining} 
+                timeRemaining={uiState.secondsRemaining}
               />
             )}
           </AnimatePresence>
@@ -393,5 +400,3 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
     </motion.div>
   );
 };
-
-
