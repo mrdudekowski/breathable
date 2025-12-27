@@ -11,23 +11,22 @@
   white-space: nowrap;
 }
 
-/* Позиционирование по центру между краем экрана и краем кольца
- * Формула: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2)
- * - 50vw = половина ширины viewport (расстояние от центра экрана до края)
+/* Позиционирование с фиксированным отступом от края контейнера
+ * Формула: calc(-1 * (var(--circle-container-size) / 2 + var(--phase-label-offset)))
  * - var(--circle-container-size) / 2 = радиус кольца (расстояние от центра до края кольца)
- * - (50vw - var(--circle-container-size) / 2) / 2 = половина расстояния между краем экрана и краем кольца
+ * - var(--phase-label-offset) = адаптивный отступ между краем кольца и надписью
  * - Минус перед формулой = позиционирование влево/вправо от центра контейнера
  */
 .left {
   top: 50%;
-  left: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2 - 10px);
+  left: calc(-1 * (var(--circle-container-size) / 2 + var(--phase-label-offset)));
   transform: translate(0, -50%);
   text-align: center;
 }
 
 .right {
   top: 50%;
-  right: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2 - 10px);
+  right: calc(-1 * (var(--circle-container-size) / 2 + var(--phase-label-offset)));
   transform: translate(0, -50%);
   text-align: center;
 }
@@ -47,10 +46,10 @@
 
   /* Формула позиционирования остается той же для консистентности на всех устройствах */
   .left {
-    left: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2 - 10px);
+    left: calc(-1 * (var(--circle-container-size) / 2 + var(--phase-label-offset)));
   }
 
   .right {
-    right: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2 - 10px);
+    right: calc(-1 * (var(--circle-container-size) / 2 + var(--phase-label-offset)));
   }
 }
