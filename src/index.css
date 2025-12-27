@@ -177,6 +177,15 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* Отключение выделения текста и системных эффектов для мобильных устройств */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Отключение системного меню при долгом нажатии (iOS) */
+  -webkit-touch-callout: none;
+  /* Отключение подсветки при тапе (Android/iOS) */
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -233,4 +242,21 @@ button {
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Исключения для интерактивных элементов - разрешить выделение текста */
+input,
+textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Разрешить выделение для элементов с contenteditable */
+[contenteditable='true'] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
