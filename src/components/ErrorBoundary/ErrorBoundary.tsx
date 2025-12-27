@@ -72,7 +72,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   render() {
     if (this.state.hasError) {
       // Если есть кастомный fallback, используем его
-      if (this.props.fallback) {
+      if (this.props.fallback != null) {
         return this.props.fallback;
       }
 

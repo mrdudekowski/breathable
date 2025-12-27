@@ -9,6 +9,9 @@ const TelegramInitializer = () => {
   return null;
 };
 
+// Экспортируем для Fast Refresh
+export { TelegramInitializer };
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <TelegramInitializer />

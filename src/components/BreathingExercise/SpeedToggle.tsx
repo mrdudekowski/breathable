@@ -13,19 +13,19 @@ export const SpeedToggle = ({ selectedSpeedId, onSpeedChange, disabled }: SpeedT
   const isSpaceManActive = selectedSpeedId === 'space-man';
 
   const handleIceManClick = () => {
-    if (!disabled && !isIceManActive) {
+    if (disabled !== true && !isIceManActive) {
       onSpeedChange('ice-man');
     }
   };
 
   const handleSpaceManClick = () => {
-    if (!disabled && !isSpaceManActive) {
+    if (disabled !== true && !isSpaceManActive) {
       onSpeedChange('space-man');
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent, speedId: BreathSpeedId) => {
-    if (disabled) return;
+    if (disabled === true) return;
     
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -47,8 +47,8 @@ export const SpeedToggle = ({ selectedSpeedId, onSpeedChange, disabled }: SpeedT
           aria-label="Ice Man - быстрый режим дыхания"
           aria-checked={isIceManActive}
           role="radio"
-          whileHover={!disabled ? { scale: 1.05 } : {}}
-          whileTap={!disabled ? { scale: 0.95 } : {}}
+          whileHover={disabled !== true ? { scale: 1.05 } : {}}
+          whileTap={disabled !== true ? { scale: 0.95 } : {}}
           transition={{ duration: 0.2 }}
         >
           Ice Man
@@ -63,8 +63,8 @@ export const SpeedToggle = ({ selectedSpeedId, onSpeedChange, disabled }: SpeedT
           aria-label="Space Man - медленный режим дыхания"
           aria-checked={isSpaceManActive}
           role="radio"
-          whileHover={!disabled ? { scale: 1.05 } : {}}
-          whileTap={!disabled ? { scale: 0.95 } : {}}
+          whileHover={disabled !== true ? { scale: 1.05 } : {}}
+          whileTap={disabled !== true ? { scale: 0.95 } : {}}
           transition={{ duration: 0.2 }}
         >
           Space Man
@@ -73,6 +73,7 @@ export const SpeedToggle = ({ selectedSpeedId, onSpeedChange, disabled }: SpeedT
     </div>
   );
 };
+
 
 
 

@@ -23,7 +23,7 @@ const PHASE_ORDER: BreathingPhase[] = ['inhale', 'exhale'];
  * Получить текущий раунд по индексу.
  */
 const getCurrentRound = (practice: BreathingPracticeConfig, index?: number): BreathingRoundConfig | undefined => {
-  if (!practice.rounds || !index) return undefined;
+  if (practice.rounds == null || practice.rounds.length === 0 || index == null || index === 0) return undefined;
   return practice.rounds.find((r) => r.index === index);
 };
 
@@ -219,11 +219,11 @@ const getNextStateOnTick = (
       // Примечание: round-inhale теперь обрабатывается выше через handleBlueHoldCompletion
       // Старая логика для round-inhale удалена, так как она пропускала выдох и паузу
       
-      if (prevState.currentHoldType === 'round-exhale' && currentRound && currentRound.finalHoldPhase === 'exhale' && practice.globalInhaleHoldDuration !== undefined) {
+      if (prevState.currentHoldType === 'round-exhale' && currentRound != null && currentRound.finalHoldPhase === 'exhale' && practice.globalInhaleHoldDuration !== undefined) {
         // После зелёной задержки на выдохе сразу переходим к вдоху (без паузы)
         // Затем при заполнении кольца перейдём к синей задержке на вдохе
         return handleGreenHoldCompletion(prevState, practice, currentRound);
-      } else if (currentRound && currentRound.finalHoldPhase === 'inhale') {
+      } else if (currentRound != null && currentRound.finalHoldPhase === 'inhale') {
         // Если задержка была на вдохе, сразу переходим к следующему этапу
         if (isLastRound) {
           // Последний раунд завершён — завершаем упражнение
@@ -304,7 +304,7 @@ const getNextStateOnTick = (
 
     // Обработка последней фазы цикла (exhale) в раунде
     // Исключаем выдох после синей задержки - он обрабатывается отдельно ниже (строка 468)
-    if (isLastPhase && currentRound && 
+    if (isLastPhase && currentRound != null && 
         !(prevState.roundCycle === currentRound.cycles && 
           (prevState.previousHoldType === 'global-inhale' || prevState.previousHoldType === 'round-inhale'))) {
       const newRoundCycle = (prevState.roundCycle ?? 1) + 1;
@@ -347,7 +347,7 @@ const getNextStateOnTick = (
               phaseChangedTo: 'inhale',
             };
           }
-        } else if (currentRound) {
+        } else if (currentRound != null) {
           // Переход к следующему циклу в раунде
           const nextInhaleDuration = getPhaseDurationWithSpeed('inhale', practice, currentRound);
             return {
@@ -371,7 +371,7 @@ const getNextStateOnTick = (
 
     // Если мы на inhale после зелёной задержки (round-exhale), переходим к синей задержке на вдохе (15 сек)
     // Это происходит когда: roundCycle === cycles, finalHoldPhase === 'exhale', и мы завершили inhale
-    if (prevState.currentPhase === 'inhale' && currentRound && practice.globalInhaleHoldDuration !== undefined) {
+    if (prevState.currentPhase === 'inhale' && currentRound != null && practice.globalInhaleHoldDuration !== undefined) {
       // Проверяем, что мы завершили вдох после зелёной задержки на выдохе
       // Критически важно: проверяем previousHoldType === 'round-exhale', чтобы гарантировать,
       // что переход к синей задержке происходит ТОЛЬКО после зелёной задержки, а не для любого вдоха на последнем цикле
@@ -396,7 +396,7 @@ const getNextStateOnTick = (
     }
 
     // Если мы на inhale и это последний цикл раунда с задержкой на вдохе (не после паузы)
-    if (prevState.currentPhase === 'inhale' && currentRound && prevState.roundCycle === currentRound.cycles && currentRound.finalHoldPhase === 'inhale') {
+    if (prevState.currentPhase === 'inhale' && currentRound != null && prevState.roundCycle === currentRound.cycles && currentRound.finalHoldPhase === 'inhale') {
       const isLastRound = prevState.currentRoundIndex === prevState.totalRounds;
       
       if (isLastRound && practice.globalInhaleHoldDuration !== undefined) {
@@ -434,7 +434,7 @@ const getNextStateOnTick = (
 
     // Обработка завершения выдоха после синей задержки
     // Проверяем: если мы на выдохе, roundCycle === cycles, и предыдущая задержка была синей (global-inhale или round-inhale)
-    if (prevState.currentPhase === 'exhale' && currentRound && 
+    if (prevState.currentPhase === 'exhale' && currentRound != null && 
         prevState.roundCycle === currentRound.cycles && 
         (prevState.previousHoldType === 'global-inhale' || prevState.previousHoldType === 'round-inhale')) {
       // Выдох после синей задержки завершён — переходим к паузе
@@ -478,7 +478,7 @@ const getNextStateOnTick = (
     }
 
     // Переход к следующей фазе в рамках цикла (inhale -> exhale) с учётом скорости
-    if (currentRound) {
+    if (currentRound != null) {
       const nextPhase = phaseOrder[currentPhaseIndex + 1];
       const nextPhaseDuration = getPhaseDurationWithSpeed(nextPhase, practice, currentRound);
 
@@ -818,7 +818,7 @@ export const useBreathingExercise = ({ practice, callbacks }: UseBreathingExerci
             currentCallbacks?.onCycleComplete?.(completedCycle);
           }
 
-          if (exerciseCompleted) {
+          if (exerciseCompleted === true) {
             currentCallbacks?.onComplete?.();
           }
 

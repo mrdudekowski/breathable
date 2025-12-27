@@ -62,7 +62,7 @@ export const getPhaseDurationWithSpeed = (
   isFinalHold?: boolean
 ): number => {
   // Для hold фазы с isFinalHold используем currentRound.finalHoldDuration если доступен
-  if (phase === 'hold' && isFinalHold && currentRound?.finalHoldDuration !== undefined) {
+  if (phase === 'hold' && isFinalHold === true && currentRound?.finalHoldDuration !== undefined) {
     return currentRound.finalHoldDuration;
   }
   
@@ -124,7 +124,7 @@ export const isFinalHold = (
 
   // Старая логика (без раундов): последний цикл с заданным finalHoldDuration
   const isLegacyFinalHold = 
-    !state.currentRoundIndex && 
+    (state.currentRoundIndex == null || state.currentRoundIndex === 0) && 
     state.currentCycle === practice.cycles && 
     practice.finalHoldDuration !== undefined;
 

@@ -110,7 +110,7 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
   // Единый эффект управления UI transitions
   useEffect(() => {
     // Очищаем предыдущий таймер
-    if (transitionTimerRef.current) {
+    if (transitionTimerRef.current !== null) {
       clearTimeout(transitionTimerRef.current);
       transitionTimerRef.current = null;
     }
@@ -147,7 +147,7 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
     }
 
     return () => {
-      if (transitionTimerRef.current) {
+      if (transitionTimerRef.current !== null) {
         clearTimeout(transitionTimerRef.current);
         transitionTimerRef.current = null;
       }

@@ -129,7 +129,7 @@ export const useTelegramWebApp = () => {
             };
           };
           
-          if (windowWithTelegram.Telegram?.WebApp) {
+          if (windowWithTelegram.Telegram?.WebApp != null) {
             const webAppCandidate = windowWithTelegram.Telegram.WebApp;
             if (isTelegramWebApp(webAppCandidate)) {
               WebApp = webAppCandidate;
@@ -168,22 +168,22 @@ export const useTelegramWebApp = () => {
 
           const themeParams = WebApp.themeParams;
           const applyTheme = (params?: TelegramWebApp['themeParams']) => {
-            if (params?.bg_color) {
+            if (params?.bg_color != null && params.bg_color !== '') {
               document.documentElement.style.setProperty('--tg-theme-bg-color', params.bg_color);
             }
-            if (params?.text_color) {
+            if (params?.text_color != null && params.text_color !== '') {
               document.documentElement.style.setProperty('--tg-theme-text-color', params.text_color);
             }
-            if (params?.hint_color) {
+            if (params?.hint_color != null && params.hint_color !== '') {
               document.documentElement.style.setProperty('--tg-theme-hint-color', params.hint_color);
             }
-            if (params?.link_color) {
+            if (params?.link_color != null && params.link_color !== '') {
               document.documentElement.style.setProperty('--tg-theme-link-color', params.link_color);
             }
-            if (params?.button_color) {
+            if (params?.button_color != null && params.button_color !== '') {
               document.documentElement.style.setProperty('--tg-theme-button-color', params.button_color);
             }
-            if (params?.button_text_color) {
+            if (params?.button_text_color != null && params.button_text_color !== '') {
               document.documentElement.style.setProperty('--tg-theme-button-text-color', params.button_text_color);
             }
           };
@@ -278,7 +278,7 @@ export const useTelegramWebApp = () => {
           updateViewport();
           
           // Подписываемся на изменения размера окна для десктоп версии
-          if (typeof window !== 'undefined' && updateViewport) {
+          if (typeof window !== 'undefined' && updateViewport != null) {
             resizeHandler = () => {
               if (updateViewport) {
                 updateViewport();
@@ -288,7 +288,7 @@ export const useTelegramWebApp = () => {
           }
 
           // Подписываемся на изменения viewport
-          if (WebApp.onEvent && updateViewport) {
+          if (WebApp.onEvent != null && updateViewport != null) {
             const handler = (payload?: unknown) => {
               const stable =
                 typeof payload === 'object' &&
@@ -297,8 +297,8 @@ export const useTelegramWebApp = () => {
                 typeof (payload as { is_state_stable?: unknown }).is_state_stable === 'boolean'
                   ? (payload as { is_state_stable?: boolean }).is_state_stable
                   : true;
-              if (!stable) return;
-              if (updateViewport) {
+              if (stable !== true) return;
+              if (updateViewport != null) {
                 updateViewport();
               }
             };
@@ -325,7 +325,7 @@ export const useTelegramWebApp = () => {
                 typeof (payload as { is_state_stable?: unknown }).is_state_stable === 'boolean'
                   ? (payload as { is_state_stable?: boolean }).is_state_stable
                   : true;
-              if (!stable) return;
+              if (stable !== true) return;
               if (isSafeAreaInsets(payload)) {
                 applySafeArea(payload);
               } else {
