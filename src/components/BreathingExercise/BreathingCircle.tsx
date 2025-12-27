@@ -6,7 +6,6 @@ import { getRgbaFromVariable } from '../../utils/colorHelpers';
 import { CycleCounter } from './CycleCounter';
 import { HoldHourglass } from './HoldHourglass';
 import { HoldTimer } from './HoldTimer';
-import { PhaseLabel } from './PhaseLabel';
 import styles from './BreathingCircle.module.css';
 
 interface BreathingCircleProps {
@@ -288,38 +287,6 @@ export const BreathingCircle = ({
     return false;
   }, [phase, isHoldPhase, isPausePhase, progress, roundCycle, previousHoldType]);
 
-  // Вычисляем видимость подсказки "Вдох" (слева от кольца)
-  // Элемент не привязан к таймингам дыхания, появляется сразу при смене фазы
-  const shouldShowInhaleLabel = useMemo(() => {
-    // Показываем только на фазе inhale
-    if (phase !== 'inhale' || !isRunning) {
-      return false;
-    }
-
-    // Не показываем на inhale после exhale hold (round-exhale)
-    if (previousHoldType === 'round-exhale') {
-      return false;
-    }
-
-    return true;
-  }, [phase, isRunning, previousHoldType]);
-
-  // Вычисляем видимость подсказки "Выдох" (справа от кольца)
-  // Элемент не привязан к таймингам дыхания, появляется сразу при смене фазы
-  const shouldShowExhaleLabel = useMemo(() => {
-    // Показываем только на фазе exhale
-    if (phase !== 'exhale' || !isRunning) {
-      return false;
-    }
-
-    // Не показываем на exhale после inhale hold (round-inhale или global-inhale)
-    if (previousHoldType === 'round-inhale' || previousHoldType === 'global-inhale') {
-      return false;
-    }
-
-    return true;
-  }, [phase, isRunning, previousHoldType]);
-
   // Сбрасываем флаг при выходе из mint hold и после первого цикла анимации
   useEffect(() => {
     if (!isMintHold && previousIsMintHold.current) {
@@ -594,26 +561,6 @@ export const BreathingCircle = ({
       {/* Обратный отсчет - под иконкой */}
       <AnimatePresence>
         {isHoldPhase && <HoldTimer key="hold-timer" timeRemaining={timeRemaining} />}
-      </AnimatePresence>
-
-      {/* Подсказки "Вдох" и "Выдох" - синхронизированный переход */}
-      <AnimatePresence>
-        {shouldShowInhaleLabel && (
-          <PhaseLabel
-            key="inhale-label"
-            text={PHASE_METADATA.inhale.label}
-            position="left"
-            phase={phase}
-          />
-        )}
-        {shouldShowExhaleLabel && (
-          <PhaseLabel
-            key="exhale-label"
-            text={PHASE_METADATA.exhale.label}
-            position="right"
-            phase={phase}
-          />
-        )}
       </AnimatePresence>
     </div>
   );

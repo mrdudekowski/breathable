@@ -128,7 +128,7 @@
   --circle-size: var(--circle-base-size);
 
   /* Phase Label Offset - отступ между краем кольца и надписями "Вдох"/"Выдох" */
-  --phase-label-offset: clamp(1rem, calc(3vw * var(--tg-scale-factor)), 2rem);
+  --phase-label-offset: clamp(0.5rem, calc(2vw * var(--tg-scale-factor)), 1.5rem);
 
   /* Circle Glow Effects */
   --circle-glow-intensity-base: 0.4;

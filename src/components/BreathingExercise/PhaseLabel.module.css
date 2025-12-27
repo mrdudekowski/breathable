@@ -11,23 +11,26 @@
   white-space: nowrap;
 }
 
-/* Позиционирование с фиксированным отступом от края контейнера
- * Формула: calc(-1 * (var(--circle-container-size) / 2 + var(--phase-label-offset)))
- * - var(--circle-container-size) / 2 = радиус кольца (расстояние от центра до края кольца)
- * - var(--phase-label-offset) = адаптивный отступ между краем кольца и надписью
- * - Минус перед формулой = позиционирование влево/вправо от центра контейнера
+/* Позиционирование относительно .circleWrapper (100% от .content)
+ * Формула: calc((100% - var(--circle-container-size)) / 2 - var(--phase-label-offset))
+ * - 100% = ширина .circleWrapper (равна ширине .content)
+ * - var(--circle-container-size) = ширина контейнера круга
+ * - (100% - var(--circle-container-size)) / 2 = расстояние от края wrapper до края контейнера
+ * - var(--phase-label-offset) = адаптивный отступ между краем контейнера и надписью
+ * - translateX(-100%) для .left = центрирование текста влево от позиции
+ * - translateX(100%) для .right = центрирование текста вправо от позиции
  */
 .left {
   top: 50%;
-  left: calc(-1 * (var(--circle-container-size) / 2 + var(--phase-label-offset)));
-  transform: translate(0, -50%);
+  left: calc((100% - var(--circle-container-size)) / 2 - var(--phase-label-offset));
+  transform: translateX(-100%) translateY(-50%);
   text-align: center;
 }
 
 .right {
   top: 50%;
-  right: calc(-1 * (var(--circle-container-size) / 2 + var(--phase-label-offset)));
-  transform: translate(0, -50%);
+  right: calc((100% - var(--circle-container-size)) / 2 - var(--phase-label-offset));
+  transform: translateX(100%) translateY(-50%);
   text-align: center;
 }
 
@@ -46,10 +49,10 @@
 
   /* Формула позиционирования остается той же для консистентности на всех устройствах */
   .left {
-    left: calc(-1 * (var(--circle-container-size) / 2 + var(--phase-label-offset)));
+    left: calc((100% - var(--circle-container-size)) / 2 - var(--phase-label-offset));
   }
 
   .right {
-    right: calc(-1 * (var(--circle-container-size) / 2 + var(--phase-label-offset)));
+    right: calc((100% - var(--circle-container-size)) / 2 - var(--phase-label-offset));
   }
 }

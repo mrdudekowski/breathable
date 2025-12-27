@@ -4,8 +4,10 @@ import { BreathingCircle } from './BreathingCircle';
 import { RoundNotification } from './RoundNotification';
 import { SpeedToggle } from './SpeedToggle';
 import { PauseTimer } from './PauseTimer';
+import { PhaseLabel } from './PhaseLabel';
 import { useBreathingExercise } from '../../hooks/useBreathingExercise';
 import type { BreathingPracticeConfig, BreathSpeedId } from '../../types/breathing';
+import { PHASE_METADATA } from '../../config/phaseMetadata';
 import {
   getPhaseDurationWithSpeed,
   getSpecialPhaseDuration,
@@ -272,6 +274,38 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
 
   const isHoldPhase = state.currentPhase === 'hold' && state.currentHoldType !== undefined;
 
+  // Вычисляем видимость подсказки "Вдох" (слева от кольца)
+  // Элемент не привязан к таймингам дыхания, появляется сразу при смене фазы
+  const shouldShowInhaleLabel = useMemo(() => {
+    // Показываем только на фазе inhale
+    if (state.currentPhase !== 'inhale' || !state.isRunning) {
+      return false;
+    }
+
+    // Не показываем на inhale после exhale hold (round-exhale)
+    if (state.previousHoldType === 'round-exhale') {
+      return false;
+    }
+
+    return true;
+  }, [state.currentPhase, state.isRunning, state.previousHoldType]);
+
+  // Вычисляем видимость подсказки "Выдох" (справа от кольца)
+  // Элемент не привязан к таймингам дыхания, появляется сразу при смене фазы
+  const shouldShowExhaleLabel = useMemo(() => {
+    // Показываем только на фазе exhale
+    if (state.currentPhase !== 'exhale' || !state.isRunning) {
+      return false;
+    }
+
+    // Не показываем на exhale после inhale hold (round-inhale или global-inhale)
+    if (state.previousHoldType === 'round-inhale' || state.previousHoldType === 'global-inhale') {
+      return false;
+    }
+
+    return true;
+  }, [state.currentPhase, state.isRunning, state.previousHoldType]);
+
   return (
     <motion.div
       className={styles.exercise}
@@ -335,6 +369,26 @@ export const BreathingExercise = ({ practice, onBack }: BreathingExerciseProps) 
             previousHoldType={state.previousHoldType}
             isRunning={state.isRunning}
           />
+
+          {/* Подсказки "Вдох" и "Выдох" - позиционируются относительно .circleWrapper */}
+          <AnimatePresence>
+            {shouldShowInhaleLabel && (
+              <PhaseLabel
+                key="inhale-label"
+                text={PHASE_METADATA.inhale.label}
+                position="left"
+                phase={state.currentPhase}
+              />
+            )}
+            {shouldShowExhaleLabel && (
+              <PhaseLabel
+                key="exhale-label"
+                text={PHASE_METADATA.exhale.label}
+                position="right"
+                phase={state.currentPhase}
+              />
+            )}
+          </AnimatePresence>
         </div>
 
         <motion.div
