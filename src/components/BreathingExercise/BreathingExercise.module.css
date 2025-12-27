@@ -5,7 +5,7 @@
   flex-direction: column;
   align-items: center;
   padding: var(--spacing-md) var(--spacing-sm);
-  overflow: auto;
+  overflow: visible;
   min-height: 0;
   gap: var(--gap-sm);
 }

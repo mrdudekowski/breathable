@@ -11,16 +11,23 @@
   white-space: nowrap;
 }
 
+/* Позиционирование по центру между краем экрана и краем кольца
+ * Формула: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2)
+ * - 50vw = половина ширины viewport (расстояние от центра экрана до края)
+ * - var(--circle-container-size) / 2 = радиус кольца (расстояние от центра до края кольца)
+ * - (50vw - var(--circle-container-size) / 2) / 2 = половина расстояния между краем экрана и краем кольца
+ * - Минус перед формулой = позиционирование влево/вправо от центра контейнера
+ */
 .left {
   top: 50%;
-  left: calc(-25vw - var(--circle-container-size) / 4);
+  left: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2);
   transform: translate(0, -50%);
   text-align: center;
 }
 
 .right {
   top: 50%;
-  right: calc(-25vw - var(--circle-container-size) / 4);
+  right: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2);
   transform: translate(0, -50%);
   text-align: center;
 }
@@ -40,11 +47,11 @@
   
   /* Формула позиционирования остается той же для консистентности на всех устройствах */
   .left {
-    left: calc(-25vw - var(--circle-container-size) / 4);
+    left: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2);
   }
   
   .right {
-    right: calc(-25vw - var(--circle-container-size) / 4);
+    right: calc(-1 * (50vw - var(--circle-container-size) / 2) / 2);
   }
 }
 

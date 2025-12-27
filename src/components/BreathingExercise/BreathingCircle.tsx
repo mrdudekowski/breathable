@@ -4,6 +4,7 @@ import type { BreathingPhase, HoldType } from '../../types/breathing';
 import { PHASE_METADATA } from '../../config/phaseMetadata';
 import { getRgbaFromVariable } from '../../utils/colorHelpers';
 import { CycleCounter } from './CycleCounter';
+import { HoldHourglass } from './HoldHourglass';
 import { HoldTimer } from './HoldTimer';
 import { PhaseLabel } from './PhaseLabel';
 import styles from './BreathingCircle.module.css';
@@ -569,7 +570,14 @@ export const BreathingCircle = ({
         )}
       </AnimatePresence>
 
-      {/* Таймер задержки дыхания - в центре кольца */}
+      {/* Иконка песочных часов - строго в центре */}
+      <AnimatePresence>
+        {isHoldPhase && (
+          <HoldHourglass key="hold-hourglass" />
+        )}
+      </AnimatePresence>
+
+      {/* Обратный отсчет - под иконкой */}
       <AnimatePresence>
         {isHoldPhase && (
           <HoldTimer key="hold-timer" timeRemaining={timeRemaining} />
